@@ -21,10 +21,10 @@ except ImportError:
 OWNER        = "MiyamotoEiji1011"
 REPO         = "iris_pipeline_v1"
 FILE_PATH    = "api/command.json"
-RAW_URL      = f"https://raw.githubusercontent.com/{OWNER}/{REPO}/main/{FILE_PATH}"
+API_URL      = f"https://api.github.com/repos/{OWNER}/{REPO}/contents/{FILE_PATH}"
 
 LED_PIN      = 27   # GPIO27 = API_LED
-POLL_INTERVAL = 3   # 秒
+POLL_INTERVAL = 2   # 秒
 
 
 def log(msg):
@@ -32,13 +32,19 @@ def log(msg):
 
 
 def fetch_command():
-    """GitHub raw URLから command.json を取得して api_led の値を返す。取得失敗時は None。"""
-    url = f"{RAW_URL}?t={int(time.time())}"  # キャッシュ回避
+    """GitHub REST API から command.json を取得して api_led の値を返す。取得失敗時は None。"""
     try:
-        req = urllib.request.Request(url, headers={"Cache-Control": "no-cache"})
+        req = urllib.request.Request(
+            API_URL,
+            headers={
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28"
+            }
+        )
         with urllib.request.urlopen(req, timeout=10) as res:
             data = json.loads(res.read().decode("utf-8"))
-            return bool(data.get("api_led", False))
+            content = json.loads(base64.b64decode(data["content"]).decode("utf-8"))
+            return bool(content.get("api_led", False))
     except urllib.error.HTTPError as e:
         log(f"HTTPエラー: {e.code}")
     except urllib.error.URLError as e:
