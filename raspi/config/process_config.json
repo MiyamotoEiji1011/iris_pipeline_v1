@@ -1,5 +1,5 @@
 {
-  "version": 13,
+  "version": 14,
   "units": {
     "A": {
       "temp_on": 20,
@@ -10,8 +10,8 @@
     "B": {
       "temp_on": 40,
       "temp_off": 35,
-      "mode": "manual",
-      "manual_command": "ON"
+      "mode": "auto",
+      "manual_command": "OFF"
     },
     "C": {
       "temp_on": 20,
