@@ -50,7 +50,8 @@ def git_push_data() -> bool:
 
     try:
         # 認証URL設定後にリモートの変更（status.json 等）を取り込む
-        ok, out = _run(["git", "pull", "--rebase"], repo)
+        # --autostash: unstaged changes を自動退避してから rebase し、完了後に戻す
+        ok, out = _run(["git", "pull", "--rebase", "--autostash"], repo)
         if not ok:
             print(f"[git_push] git pull 失敗: {out}")
 
