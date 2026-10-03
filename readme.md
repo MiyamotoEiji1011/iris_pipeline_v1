@@ -88,3 +88,8 @@ OSの状態を管理
 各電磁弁の開閉温度の設定、各空調機の制御で銅管温度と吸気温度のどちらを設定しているのかを保存しているファイル。
 ・config
 　githubなどのアカウント関係に紐づく値を管理
+
+# raspi
+git pull
+source .venv/bin/activate
+pip install -r requirements.txt

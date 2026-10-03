@@ -27,7 +27,7 @@ API_URL       = f"https://api.github.com/repos/{OWNER}/{REPO}/contents/{FILE_PAT
 LED_PIN       = 25  # GPIO27 = API_LED
 POLL_INTERVAL = 3   # 秒
 
-_config_path = os.path.join(os.path.dirname(__file__), "config.json")
+_config_path = os.path.join(os.path.dirname(__file__), "config/config.json")
 with open(_config_path) as f:
     _config = json.load(f)
 GITHUB_TOKEN = _config.get("github_token", "")
