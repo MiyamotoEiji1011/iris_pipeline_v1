@@ -2,15 +2,15 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from config.attach_pin import GPIO_SENSORS
+from config.units import UNITS
 
 W1_BASE = "/sys/bus/w1/devices"
 
-# attach_pin から デバイスID → GPIO の逆引きマップを作成
+# UNITS から デバイスID → GPIO の逆引きマップを作成
 id_to_gpio = {
-    s["id"]: gpio
-    for gpio, sensors in GPIO_SENSORS.items()
-    for s in sensors
+    s["id"]: u["sensor_gpio"]
+    for u in UNITS.values()
+    for s in u["sensors"]
 }
 
 devices = sorted(d for d in os.listdir(W1_BASE) if d.startswith("28-"))

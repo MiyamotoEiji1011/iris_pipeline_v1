@@ -1,9 +1,9 @@
 import RPi.GPIO as GPIO  # type: ignore
+import time
 from datetime import datetime
-from config.attach_pin import GPIO_SENSORS, RELAY_PINS
+from config.units import UNITS
 from tools.read_temp_sensor import read_temp_sensor
 from tools.write_relay_module import write_relay_module
-import time
 
 
 def log(msg):
@@ -26,10 +26,11 @@ def temp_sensor() -> list[dict]:
     log("読み取り開始")
 
     results = []
-    for gpio, sensors in GPIO_SENSORS.items():
-        for r in read_temp_sensor(sensors):
+    for unit_name, unit in UNITS.items():
+        for r in read_temp_sensor(unit["sensors"]):
+            unit[r["role"]] = r["temp"]
             temp_str = f"{r['temp']:.3f} C" if r["temp"] is not None else "読み取り失敗"
-            log(f"GPIO{gpio:02d}  {r['name']:12s}  {r['role']}  {temp_str}")
+            log(f"ユニット{unit_name}  {r['name']:12s}  {r['role']}  {temp_str}")
             results.append(r)
 
     log("読み取り終了")
@@ -39,10 +40,12 @@ def temp_sensor() -> list[dict]:
 def relay_all(state: bool):
     label = "ON" if state else "OFF"
     log(f"----電磁弁 全{label}----")
-    for gpio, name in RELAY_PINS.items():
-        result = write_relay_module(gpio, state)
-        log(f"  {name} (GPIO{gpio:02d}) {label} {'OK' if result else 'FAIL'}")
-    time.sleep(1)  # リレーの切り替え待ち
+    for unit_name, unit in UNITS.items():
+        result = write_relay_module(unit["relay_gpio"], state)
+        if result:
+            unit["relay_state"] = state
+        log(f"  ユニット{unit_name} (GPIO{unit['relay_gpio']:02d}) {label} {'OK' if result else 'FAIL'}")
+    time.sleep(1)
 
 
 def main():
@@ -53,6 +56,7 @@ def main():
         relay_all(True)
 
     finally:
+        print(UNITS)
         cleanup()
 
 

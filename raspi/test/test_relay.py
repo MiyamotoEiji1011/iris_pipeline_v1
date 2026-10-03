@@ -10,12 +10,12 @@ import time
 import RPi.GPIO as GPIO
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from config.attach_pin import RELAY_PINS
+from config.units import UNITS
 
 ON_SEC  = 1.0  # ON 維持時間（秒）
 OFF_SEC = 0.5  # OFF 待機時間（秒）
 
-pins = list(RELAY_PINS.items())  # [(7, "relay_A"), ...]
+pins = [(u["relay_gpio"], f"relay_{name}") for name, u in UNITS.items()]
 
 GPIO.setmode(GPIO.BCM)
 for pin, _ in pins:

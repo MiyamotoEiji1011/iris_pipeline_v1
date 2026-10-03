@@ -24,7 +24,7 @@ def read_temp_sensor(sensors: list[dict]) -> list[dict]:
     センサリストの温度を取得する。
 
     Args:
-        sensors: attach_pin.py の GPIO_SENSORS[gpio] の値
+        sensors: units.py の UNITS[unit]["sensors"] の値
 
     Returns:
         [{"id": "28-xxx", "name": "sensor_A1", "role": "copper", "temp": 38.25}, ...]
