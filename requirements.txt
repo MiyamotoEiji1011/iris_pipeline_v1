@@ -1,0 +1,8 @@
+# GPIO制御 (Raspberry Pi のみ)
+RPi.GPIO
+
+# Excelファイル生成
+openpyxl
+
+# HTTPクライアント（urllib の代替、より簡潔に書ける）
+requests
