@@ -99,18 +99,17 @@ def record_csv():
 def main():
     setup()
 
-    last_record = 0
+    last_record = 0.0
 
     try:
         while True:
-            temp_sensor()
-            control_units()
-
-            if time.time() - last_record >= RECORD_INTERVAL:
+            now = time.time()
+            if now - last_record >= RECORD_INTERVAL:
+                last_record = now
+                temp_sensor()
+                control_units()
                 record_csv()
-                last_record = time.time()
-
-            time.sleep(1)
+            time.sleep(0.1)
 
     except KeyboardInterrupt:
         log("停止しました")

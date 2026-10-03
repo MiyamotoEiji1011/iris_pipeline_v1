@@ -94,3 +94,9 @@ cd ~/iris_pipeline_v1/raspi
 git pull
 source .venv/bin/activate
 pip install -r requirements.txt
+
+## git
+cd ~/iris_pipeline_v1
+git add .
+git commit -m "update raspi code"
+git push
