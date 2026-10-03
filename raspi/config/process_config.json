@@ -1,51 +1,51 @@
 {
-  "version": 21,
+  "version": 22,
   "units": {
     "A": {
       "temp_on": 25,
-      "temp_off": 10,
+      "temp_off": 24,
       "mode": "auto",
       "manual_command": "OFF"
     },
     "B": {
       "temp_on": 25,
-      "temp_off": 10,
+      "temp_off": 24,
       "mode": "auto",
       "manual_command": "OFF"
     },
     "C": {
       "temp_on": 25,
-      "temp_off": 10,
+      "temp_off": 24,
       "mode": "auto",
       "manual_command": "OFF"
     },
     "D": {
       "temp_on": 25,
-      "temp_off": 10,
+      "temp_off": 24,
       "mode": "auto",
       "manual_command": "OFF"
     },
     "E": {
       "temp_on": 25,
-      "temp_off": 10,
+      "temp_off": 24,
       "mode": "auto",
       "manual_command": "OFF"
     },
     "F": {
       "temp_on": 25,
-      "temp_off": 10,
+      "temp_off": 24,
       "mode": "auto",
       "manual_command": "OFF"
     },
     "G": {
       "temp_on": 25,
-      "temp_off": 10,
+      "temp_off": 24,
       "mode": "auto",
       "manual_command": "OFF"
     },
     "H": {
       "temp_on": 25,
-      "temp_off": 10,
+      "temp_off": 24,
       "mode": "auto",
       "manual_command": "OFF"
     }
