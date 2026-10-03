@@ -24,7 +24,7 @@ REPO          = "iris_pipeline_v1"
 FILE_PATH     = "api/command.json"
 API_URL       = f"https://api.github.com/repos/{OWNER}/{REPO}/contents/{FILE_PATH}"
 
-LED_PIN       = 27  # GPIO27 = API_LED
+LED_PIN       = 25  # GPIO27 = API_LED
 POLL_INTERVAL = 3   # 秒
 
 _config_path = os.path.join(os.path.dirname(__file__), "config.json")
