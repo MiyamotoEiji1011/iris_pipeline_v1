@@ -1,7 +1,21 @@
 # 空調機ユニット定義
-# ハードウェア設定（relay_gpio, sensor_gpio, sensors）は固定値
-# 運転設定（temp_on, temp_off, mode）は起動時に process_config.py から反映
-# 現在値・状態（銅管部温度, 吸気部温度, relay_state）は実行時に更新
+#
+# ハードウェア設定（固定値・変更時はコード編集が必要）
+#   relay_gpio  : 電磁弁を制御するリレーの GPIO ピン番号
+#   sensor_gpio : 温度センサが接続されている GPIO ピン番号
+#   sensors     : センサのデバイスID・名称・役割リスト
+#
+# 運転設定（起動時に process_config.json から反映・実行中も再ロード可）
+#   temp_on     : この温度を超えたら電磁弁を開く（ミスト噴射開始）
+#   temp_off    : この温度を下回ったら電磁弁を閉じる（ミスト停止）
+#   mode        : 制御モード
+#                   "自動操作" … temp_on/temp_off に基づいて電磁弁を自動制御
+#                   "手動操作" … Web から直接 ON/OFF を指示、自動制御は無効
+#
+# 現在値・状態（実行時に更新）
+#   銅管部温度  : 銅管センサの最新温度（float or None）
+#   吸気部温度  : 吸気センサの最新温度（float or None）
+#   relay_state : リレーの現在状態（True=ON / False=OFF）
 
 UNITS = {
     "A": {
