@@ -1,2 +1,5 @@
 raspi/config/config.json
+raspi/config.json
 .venv/
+__pycache__/
+*.pyc
