@@ -49,8 +49,10 @@ def git_push_data() -> bool:
             _run(["git", "remote", "set-url", "origin", auth_url], repo)
 
     try:
-        # リモートの変更（status.json 等）を先に取り込む
-        _run(["git", "pull", "--rebase"], repo)
+        # 認証URL設定後にリモートの変更（status.json 等）を取り込む
+        ok, out = _run(["git", "pull", "--rebase"], repo)
+        if not ok:
+            print(f"[git_push] git pull 失敗: {out}")
 
         # data/*.csv のみステージ
         csv_files = glob.glob(os.path.join(repo, "data", "*.csv"))
