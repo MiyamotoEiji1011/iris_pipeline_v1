@@ -7,11 +7,15 @@ from config.units import UNITS
 from tools.read_temp_sensor import read_temp_sensor
 from tools.write_relay_module import write_relay_module
 from tools.write_csv import append_csv
+from tools.git_push_data import git_push_data
 
 _PROCESS_CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config/process_config.json")
 _DATA_DIR            = os.path.join(os.path.dirname(__file__), "../data")
 
-RECORD_INTERVAL = 10   # CSV記録間隔（秒）
+RECORD_INTERVAL  = 15     # CSV記録間隔（秒）60
+PUSH_INTERVAL    = 60   # git push間隔（秒）3600
+
+DAEMON_LED_GPIO  = 25
 
 
 def log(msg):
@@ -31,6 +35,10 @@ def load_process_config():
 
 
 def cleanup():
+    try:
+        GPIO.output(DAEMON_LED_GPIO, False)
+    except RuntimeError:
+        pass
     GPIO.cleanup()
     log("GPIO クリーンアップ完了")
 
@@ -38,6 +46,8 @@ def cleanup():
 def setup():
     cleanup()
     GPIO.setmode(GPIO.BCM)
+    GPIO.setup(DAEMON_LED_GPIO, GPIO.OUT, initial=GPIO.LOW)
+    GPIO.output(DAEMON_LED_GPIO, True)
     log("GPIO セットアップ完了")
     load_process_config()
 
@@ -100,6 +110,7 @@ def main():
     setup()
 
     last_record = 0.0
+    last_push   = 0.0
 
     try:
         while True:
@@ -109,6 +120,10 @@ def main():
                 temp_sensor()
                 control_units()
                 record_csv()
+            if now - last_push >= PUSH_INTERVAL:
+                last_push = now
+                log("----git push----")
+                git_push_data()
             time.sleep(0.1)
 
     except KeyboardInterrupt:
