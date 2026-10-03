@@ -1,10 +1,21 @@
-import json
-from tools.read_temp_sensor import read_temp_sensor
+import os
 
-with open("config/attach_pin.json") as f:
-    GPIO_LIST = [int(k) for k in json.load(f)["gpio_sensors"].keys()]
+W1_BASE = "/sys/bus/w1/devices"
 
-for gpio in GPIO_LIST:
-    for r in read_temp_sensor(gpio):
-        temp = f"{r['temp']:.3f} C" if r["temp"] is not None else "失敗"
-        print(f"{r['name']}  {r['id']}  {temp}")
+devices = [d for d in os.listdir(W1_BASE) if d.startswith("28-")]
+
+if not devices:
+    print("センサが見つかりません")
+else:
+    for device_id in devices:
+        path = os.path.join(W1_BASE, device_id, "w1_slave")
+        try:
+            with open(path) as f:
+                lines = f.readlines()
+            if lines[0].strip().endswith("YES"):
+                temp = float(lines[1].strip().split("t=")[1]) / 1000.0
+                print(f"{device_id}  {temp:.3f} C")
+            else:
+                print(f"{device_id}  CRCエラー")
+        except Exception as e:
+            print(f"{device_id}  エラー: {e}")
