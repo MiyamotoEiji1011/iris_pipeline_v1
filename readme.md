@@ -90,6 +90,7 @@ OSの状態を管理
 　githubなどのアカウント関係に紐づく値を管理
 
 # raspi
+cd ~/iris_pipeline_v1/raspi
 git pull
 source .venv/bin/activate
 pip install -r requirements.txt
