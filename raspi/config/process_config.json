@@ -1,13 +1,53 @@
 {
-  "version": 1,
+  "version": 2,
   "units": {
-    "A": {"temp_on": 20.0, "temp_off": 10.0, "mode": "auto", "manual_command": "OFF"},
-    "B": {"temp_on": 40.0, "temp_off": 35.0, "mode": "auto", "manual_command": "OFF"},
-    "C": {"temp_on": 20.0, "temp_off": 10.0, "mode": "auto", "manual_command": "OFF"},
-    "D": {"temp_on": 40.0, "temp_off": 35.0, "mode": "auto", "manual_command": "OFF"},
-    "E": {"temp_on": 20.0, "temp_off": 10.0, "mode": "auto", "manual_command": "OFF"},
-    "F": {"temp_on": 40.0, "temp_off": 35.0, "mode": "auto", "manual_command": "OFF"},
-    "G": {"temp_on": 40.0, "temp_off": 35.0, "mode": "auto", "manual_command": "OFF"},
-    "H": {"temp_on": 40.0, "temp_off": 35.0, "mode": "auto", "manual_command": "OFF"}
+    "A": {
+      "temp_on": 20,
+      "temp_off": 10,
+      "mode": "auto",
+      "manual_command": "OFF"
+    },
+    "B": {
+      "temp_on": 40,
+      "temp_off": 35,
+      "mode": "manual",
+      "manual_command": "OFF"
+    },
+    "C": {
+      "temp_on": 20,
+      "temp_off": 10,
+      "mode": "auto",
+      "manual_command": "OFF"
+    },
+    "D": {
+      "temp_on": 40,
+      "temp_off": 35,
+      "mode": "auto",
+      "manual_command": "OFF"
+    },
+    "E": {
+      "temp_on": 20,
+      "temp_off": 10,
+      "mode": "auto",
+      "manual_command": "OFF"
+    },
+    "F": {
+      "temp_on": 40,
+      "temp_off": 35,
+      "mode": "auto",
+      "manual_command": "OFF"
+    },
+    "G": {
+      "temp_on": 40,
+      "temp_off": 35,
+      "mode": "auto",
+      "manual_command": "OFF"
+    },
+    "H": {
+      "temp_on": 40,
+      "temp_off": 35,
+      "mode": "auto",
+      "manual_command": "OFF"
+    }
   }
 }
