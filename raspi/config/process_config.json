@@ -1,9 +1,9 @@
 {
-  "A": {"temp_on": 40.0, "temp_off": 35.0, "mode": "自動操作"},
+  "A": {"temp_on": 20.0, "temp_off": 10.0, "mode": "自動操作"},
   "B": {"temp_on": 40.0, "temp_off": 35.0, "mode": "自動操作"},
-  "C": {"temp_on": 40.0, "temp_off": 35.0, "mode": "自動操作"},
+  "C": {"temp_on": 20.0, "temp_off": 10.0, "mode": "自動操作"},
   "D": {"temp_on": 40.0, "temp_off": 35.0, "mode": "自動操作"},
-  "E": {"temp_on": 40.0, "temp_off": 35.0, "mode": "自動操作"},
+  "E": {"temp_on": 20.0, "temp_off": 10.0, "mode": "自動操作"},
   "F": {"temp_on": 40.0, "temp_off": 35.0, "mode": "自動操作"},
   "G": {"temp_on": 40.0, "temp_off": 35.0, "mode": "自動操作"},
   "H": {"temp_on": 40.0, "temp_off": 35.0, "mode": "自動操作"}

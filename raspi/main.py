@@ -54,15 +54,36 @@ def temp_sensor() -> list[dict]:
     return results
 
 
-def relay_all(state: bool):
-    label = "ON" if state else "OFF"
-    log(f"----電磁弁 全{label}----")
+def control_units():
+    """各ユニットの温度に基づいて電磁弁を制御する。手動操作のユニットはスキップ。"""
+    log("----電磁弁 制御----")
     for unit_name, unit in UNITS.items():
-        result = write_relay_module(unit["relay_gpio"], state)
-        if result:
-            unit["relay_state"] = state
-        log(f"  ユニット{unit_name} (GPIO{unit['relay_gpio']:02d}) {label} {'OK' if result else 'FAIL'}")
-    time.sleep(1)
+        if unit["mode"] != "自動操作":
+            log(f"  ユニット{unit_name} 手動操作のためスキップ")
+            continue
+
+        temp    = unit["銅管部温度"]
+        temp_on  = unit["temp_on"]
+        temp_off = unit["temp_off"]
+
+        if temp is None or temp_on is None or temp_off is None:
+            log(f"  ユニット{unit_name} データ不足のためスキップ")
+            continue
+
+        if temp >= temp_on and not unit["relay_state"]:
+            result = write_relay_module(unit["relay_gpio"], True)
+            if result:
+                unit["relay_state"] = True
+            log(f"  ユニット{unit_name} ON  ({temp:.3f}C >= {temp_on}C)")
+
+        elif temp <= temp_off and unit["relay_state"]:
+            result = write_relay_module(unit["relay_gpio"], False)
+            if result:
+                unit["relay_state"] = False
+            log(f"  ユニット{unit_name} OFF ({temp:.3f}C <= {temp_off}C)")
+
+        else:
+            log(f"  ユニット{unit_name} 保持 ({temp:.3f}C, relay={'ON' if unit['relay_state'] else 'OFF'})")
 
 
 def main():
@@ -70,7 +91,7 @@ def main():
 
     try:
         temp_sensor()
-        relay_all(True)
+        control_units()
 
     finally:
         print(UNITS)
