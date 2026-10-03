@@ -1,6 +1,9 @@
 # GPIO制御 (Raspberry Pi のみ)
 RPi.GPIO
 
+# DS18B20 温度センサ (Raspberry Pi のみ)
+w1thermsensor
+
 # Excelファイル生成
 openpyxl
 
