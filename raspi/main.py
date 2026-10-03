@@ -6,8 +6,12 @@ from datetime import datetime
 from config.units import UNITS
 from tools.read_temp_sensor import read_temp_sensor
 from tools.write_relay_module import write_relay_module
+from tools.write_csv import append_csv
 
 _PROCESS_CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config/process_config.json")
+_DATA_DIR            = os.path.join(os.path.dirname(__file__), "../data")
+
+RECORD_INTERVAL = 10   # CSV記録間隔（秒）
 
 
 def log(msg):
@@ -62,7 +66,7 @@ def control_units():
             log(f"  ユニット{unit_name} 手動操作のためスキップ")
             continue
 
-        temp    = unit["銅管部温度"]
+        temp     = unit["銅管部温度"]
         temp_on  = unit["temp_on"]
         temp_off = unit["temp_off"]
 
@@ -86,15 +90,31 @@ def control_units():
             log(f"  ユニット{unit_name} 保持 ({temp:.3f}C, relay={'ON' if unit['relay_state'] else 'OFF'})")
 
 
+def record_csv():
+    """UNITS の現在状態を CSV に記録する。"""
+    append_csv(UNITS, _DATA_DIR)
+    log("CSV 記録完了")
+
+
 def main():
     setup()
 
-    try:
-        temp_sensor()
-        control_units()
+    last_record = 0
 
+    try:
+        while True:
+            temp_sensor()
+            control_units()
+
+            if time.time() - last_record >= RECORD_INTERVAL:
+                record_csv()
+                last_record = time.time()
+
+            time.sleep(1)
+
+    except KeyboardInterrupt:
+        log("停止しました")
     finally:
-        print(UNITS)
         cleanup()
 
 
