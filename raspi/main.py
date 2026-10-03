@@ -3,6 +3,7 @@ from datetime import datetime
 from config.attach_pin import GPIO_SENSORS, RELAY_PINS
 from tools.read_temp_sensor import read_temp_sensor
 from tools.write_relay_module import write_relay_module
+import time
 
 
 def log(msg):
@@ -41,6 +42,7 @@ def relay_all(state: bool):
     for gpio, name in RELAY_PINS.items():
         result = write_relay_module(gpio, state)
         log(f"  {name} (GPIO{gpio:02d}) {label} {'OK' if result else 'FAIL'}")
+    time.sleep(1)  # リレーの切り替え待ち
 
 
 def main():
