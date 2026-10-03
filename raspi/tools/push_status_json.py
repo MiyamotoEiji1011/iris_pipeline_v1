@@ -46,10 +46,11 @@ def _build_status(units: dict, applied_version: int) -> dict:
         },
         "units": {
             name: {
-                "temperature": unit["銅管部温度"],
-                "mode":        unit["mode"],
-                "relay_actual": "ON" if unit["relay_state"] else "OFF",
-                "sensor_ok":   unit["銅管部温度"] is not None,
+                "temperature":        unit["銅管部温度"],
+                "intake_temperature": unit["吸気部温度"],
+                "mode":               unit["mode"],
+                "relay_actual":       "ON" if unit["relay_state"] else "OFF",
+                "sensor_ok":          unit["銅管部温度"] is not None,
             }
             for name, unit in units.items()
         }
