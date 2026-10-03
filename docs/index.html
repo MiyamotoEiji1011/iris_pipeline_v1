@@ -17,7 +17,9 @@
       border-radius: 8px;
       padding: 24px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      margin-bottom: 16px;
     }
+    h2 { font-size: 1rem; color: #444; margin: 0 0 16px; }
     label { display: block; font-size: 0.85rem; color: #555; margin-bottom: 4px; }
     input[type="text"] {
       width: 100%;
@@ -40,8 +42,10 @@
     }
     button:hover { background: #357abd; }
     button:disabled { background: #aaa; cursor: not-allowed; }
+    button.green { background: #28a745; }
+    button.green:hover { background: #218838; }
     .status {
-      margin-top: 20px;
+      margin-top: 16px;
       padding: 12px;
       border-radius: 4px;
       font-size: 0.95rem;
@@ -51,6 +55,7 @@
     .status.on  { background: #d4edda; color: #155724; display: block; }
     .status.off { background: #f8d7da; color: #721c24; display: block; }
     .status.err { background: #fff3cd; color: #856404; display: block; }
+    .status.ok  { background: #d4edda; color: #155724; display: block; }
     .led-indicator {
       width: 24px; height: 24px;
       border-radius: 50%;
@@ -64,100 +69,135 @@
   </style>
 </head>
 <body>
-  <h1>Iris Pipeline - API LED テスト</h1>
+  <h1>Iris Pipeline</h1>
+
+  <!-- PAT 入力（共通） -->
   <div class="card">
     <label for="pat">GitHub Personal Access Token</label>
     <input type="text" id="pat" placeholder="ghp_xxxxxxxxxxxx">
+  </div>
 
+  <!-- LED 制御 -->
+  <div class="card">
+    <h2>API LED 制御</h2>
     <button id="toggleBtn" onclick="toggleLED()">API LED を切り替え</button>
-
-    <div class="status" id="status">
+    <div class="status" id="ledStatus">
       <span class="led-indicator" id="ledIcon"></span>
-      <span id="statusText">-</span>
+      <span id="ledStatusText">-</span>
     </div>
   </div>
 
-  <script>
-    const OWNER  = 'MiyamotoEiji1011';
-    const REPO   = 'iris_pipeline_v1';
-    const PATH   = 'api/command.json';
-    const API    = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
+  <!-- データダウンロード -->
+  <div class="card">
+    <h2>データダウンロード</h2>
+    <button class="green" id="downloadBtn" onclick="downloadCSV()">sample.csv をダウンロード</button>
+    <div class="status" id="dlStatus"></div>
+  </div>
 
-    function setStatus(state) {
-      const box  = document.getElementById('status');
+  <script>
+    const OWNER = 'MiyamotoEiji1011';
+    const REPO  = 'iris_pipeline_v1';
+
+    function getToken() {
+      return document.getElementById('pat').value.trim();
+    }
+
+    function githubHeaders() {
+      return {
+        'Authorization': `Bearer ${getToken()}`,
+        'Accept': 'application/vnd.github+json'
+      };
+    }
+
+    // --- LED 制御 ---
+    function setLedStatus(state) {
+      const box  = document.getElementById('ledStatus');
       const icon = document.getElementById('ledIcon');
-      const text = document.getElementById('statusText');
+      const text = document.getElementById('ledStatusText');
       if (state === 'on') {
-        box.className  = 'status on';
-        icon.className = 'led-indicator on';
+        box.className = 'status on'; icon.className = 'led-indicator on';
         text.textContent = 'API LED: ON';
       } else if (state === 'off') {
-        box.className  = 'status off';
-        icon.className = 'led-indicator off';
+        box.className = 'status off'; icon.className = 'led-indicator off';
         text.textContent = 'API LED: OFF';
       } else {
-        box.className  = 'status err';
-        icon.className = 'led-indicator';
+        box.className = 'status err'; icon.className = 'led-indicator';
         text.textContent = state;
       }
     }
 
     async function toggleLED() {
-      const token = document.getElementById('pat').value.trim();
-      if (!token) { setStatus('PATを入力してください'); return; }
-
+      if (!getToken()) { setLedStatus('PATを入力してください'); return; }
       const btn = document.getElementById('toggleBtn');
-      btn.disabled = true;
-      btn.textContent = '処理中...';
+      btn.disabled = true; btn.textContent = '処理中...';
 
-      const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/vnd.github+json'
-      };
-
+      const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/api/command.json`;
       try {
-        // 現在のファイルを取得
-        const getRes = await fetch(API, { headers });
-
-        let currentLed = false;
-        let sha = null;
-
+        const getRes = await fetch(api, { headers: githubHeaders() });
+        let currentLed = false, sha = null;
         if (getRes.ok) {
           const data = await getRes.json();
           sha = data.sha;
-          const decoded = JSON.parse(atob(data.content.replace(/\n/g, '')));
-          currentLed = decoded.api_led;
+          currentLed = JSON.parse(atob(data.content.replace(/\n/g, ''))).api_led;
         } else if (getRes.status !== 404) {
           throw new Error(`取得失敗: ${getRes.status}`);
         }
 
-        // 値を反転して書き込み
         const newLed = !currentLed;
-        const payload = {
-          api_led: newLed,
-          timestamp: new Date().toISOString()
-        };
-
         const body = {
           message: `toggle api_led: ${newLed}`,
-          content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))))
+          content: btoa(unescape(encodeURIComponent(JSON.stringify({ api_led: newLed, timestamp: new Date().toISOString() }, null, 2))))
         };
         if (sha) body.sha = sha;
 
-        const putRes = await fetch(API, {
+        const putRes = await fetch(api, {
           method: 'PUT',
-          headers: { ...headers, 'Content-Type': 'application/json' },
+          headers: { ...githubHeaders(), 'Content-Type': 'application/json' },
           body: JSON.stringify(body)
         });
-
         if (!putRes.ok) throw new Error(`書き込み失敗: ${putRes.status}`);
-
-        setStatus(newLed ? 'on' : 'off');
+        setLedStatus(newLed ? 'on' : 'off');
       } catch (e) {
-        setStatus(`エラー: ${e.message}`);
+        setLedStatus(`エラー: ${e.message}`);
       } finally {
-        btn.disabled = false;
-        btn.textContent = 'API LED を切り替え';
+        btn.disabled = false; btn.textContent = 'API LED を切り替え';
+      }
+    }
+
+    // --- CSV ダウンロード ---
+    function setDlStatus(type, msg) {
+      const box = document.getElementById('dlStatus');
+      box.className = `status ${type}`;
+      box.textContent = msg;
+    }
+
+    async function downloadCSV() {
+      if (!getToken()) { setDlStatus('err', 'PATを入力してください'); return; }
+      const btn = document.getElementById('downloadBtn');
+      btn.disabled = true; btn.textContent = '取得中...';
+
+      const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/sample.csv`;
+      try {
+        const res = await fetch(api, { headers: githubHeaders() });
+        if (!res.ok) throw new Error(`取得失敗: ${res.status}`);
+
+        const data = await res.json();
+        const csvText = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+
+        // ブラウザでダウンロード
+        const blob = new Blob([csvText], { type: 'text/csv' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = 'sample.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+
+        setDlStatus('ok', 'ダウンロード完了');
+      } catch (e) {
+        setDlStatus('err', `エラー: ${e.message}`);
+      } finally {
+        btn.disabled = false; btn.textContent = 'sample.csv をダウンロード';
       }
     }
   </script>

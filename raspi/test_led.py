@@ -1,9 +1,11 @@
 """
 API LED トグルテスト
-GitHub の api/command.json をポーリングし、api_led の値に応じて GPIO27 を切り替える。
+GitHub Contents API + ETag で3秒ポーリングし、api_led の値に応じて GPIO27 を切り替える。
+変化がない場合は 304 が返るためレート制限を消費しない。
 """
 
 import json
+import os
 import time
 import base64
 import urllib.request
@@ -14,44 +16,61 @@ try:
     import RPi.GPIO as GPIO
     SIMULATION = False
 except ImportError:
-    # PC上でのテスト実行用（GPIO未使用）
     SIMULATION = True
     print("[INFO] RPi.GPIO が見つかりません。シミュレーションモードで実行します。")
 
-OWNER        = "MiyamotoEiji1011"
-REPO         = "iris_pipeline_v1"
-FILE_PATH    = "api/command.json"
-API_URL      = f"https://api.github.com/repos/{OWNER}/{REPO}/contents/{FILE_PATH}"
+OWNER         = "MiyamotoEiji1011"
+REPO          = "iris_pipeline_v1"
+FILE_PATH     = "api/command.json"
+API_URL       = f"https://api.github.com/repos/{OWNER}/{REPO}/contents/{FILE_PATH}"
 
-LED_PIN      = 27   # GPIO27 = API_LED
-POLL_INTERVAL = 2   # 秒
+LED_PIN       = 27  # GPIO27 = API_LED
+POLL_INTERVAL = 3   # 秒
+
+_config_path = os.path.join(os.path.dirname(__file__), "config.json")
+with open(_config_path) as f:
+    _config = json.load(f)
+GITHUB_TOKEN = _config.get("github_token", "")
 
 
 def log(msg):
     print(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}")
 
 
-def fetch_command():
-    """GitHub REST API から command.json を取得して api_led の値を返す。取得失敗時は None。"""
+def fetch_command(etag: str | None) -> tuple[bool | None, str | None]:
+    """
+    GitHub Contents API から command.json を取得する。
+    Returns: (api_led の値 or None, 新しい ETag or None)
+      - 変化なし (304): (None, None)
+      - 変化あり (200): (bool, etag)
+      - エラー      : (None, None)
+    """
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Authorization": f"Bearer {GITHUB_TOKEN}"
+    }
+    if etag:
+        headers["If-None-Match"] = etag
+
     try:
-        req = urllib.request.Request(
-            API_URL,
-            headers={
-                "Accept": "application/vnd.github+json",
-                "X-GitHub-Api-Version": "2022-11-28"
-            }
-        )
+        req = urllib.request.Request(API_URL, headers=headers)
         with urllib.request.urlopen(req, timeout=10) as res:
+            new_etag = res.headers.get("ETag")
             data = json.loads(res.read().decode("utf-8"))
             content = json.loads(base64.b64decode(data["content"]).decode("utf-8"))
-            return bool(content.get("api_led", False))
+            return bool(content.get("api_led", False)), new_etag
+
     except urllib.error.HTTPError as e:
+        if e.code == 304:
+            return None, None  # 変化なし
         log(f"HTTPエラー: {e.code}")
     except urllib.error.URLError as e:
         log(f"接続エラー: {e.reason}")
     except (json.JSONDecodeError, KeyError) as e:
         log(f"JSONパースエラー: {e}")
-    return None
+
+    return None, None
 
 
 def set_led(state: bool):
@@ -67,20 +86,26 @@ def main():
         GPIO.setup(LED_PIN, GPIO.OUT, initial=GPIO.LOW)
 
     log("API LED テスト開始。Ctrl+C で停止。")
+
     current_state = None
+    etag = None
 
     try:
         while True:
-            state = fetch_command()
+            state, new_etag = fetch_command(etag)
 
-            if state is None:
-                log("コマンド取得失敗。リトライします。")
-            elif state != current_state:
-                set_led(state)
-                current_state = state
-                log(f"LED 変更 -> {'ON' if state else 'OFF'}")
+            if new_etag is None and state is None:
+                # 304 または エラー
+                if etag:
+                    log("変化なし (304)")
+                else:
+                    log("コマンド取得失敗。リトライします。")
             else:
-                log(f"変化なし (LED={'ON' if state else 'OFF'})")
+                etag = new_etag
+                if state != current_state:
+                    set_led(state)
+                    current_state = state
+                    log(f"LED 変更 -> {'ON' if state else 'OFF'}")
 
             time.sleep(POLL_INTERVAL)
 
