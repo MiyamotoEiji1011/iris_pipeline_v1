@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-03T23:23:28+09:00",
+  "updated_at": "2026-10-03T23:23:38+09:00",
   "device": {
     "applied_config_version": 27
   },
@@ -34,7 +34,7 @@
     },
     "E": {
       "temperature": 23.187,
-      "intake_temperature": 22.562,
+      "intake_temperature": 22.5,
       "mode": "auto",
       "relay_actual": "OFF",
       "sensor_ok": true
