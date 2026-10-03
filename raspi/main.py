@@ -59,6 +59,7 @@ def _apply_units_config(config: dict, apply_manual: bool = True):
         unit["temp_off"]       = cfg["temp_off"]
         unit["mode"]           = cfg["mode"]
         unit["manual_command"] = cfg["manual_command"]
+        unit["control_sensor"] = cfg.get("control_sensor", "銅管部温度")
 
         # 手動モード: manual_command を即時適用（起動時は常にOFF）
         if new_mode == "manual":
@@ -136,7 +137,8 @@ def control_units():
             log(f"  ユニット{unit_name} 手動操作")
             continue
 
-        temp     = unit["銅管部温度"]
+        sensor   = unit.get("control_sensor", "銅管部温度")
+        temp     = unit[sensor]
         temp_on  = unit["temp_on"]
         temp_off = unit["temp_off"]
 
@@ -147,13 +149,13 @@ def control_units():
         if temp >= temp_on and not unit["relay_state"]:
             if write_relay_module(unit["relay_gpio"], True):
                 unit["relay_state"] = True
-            log(f"  ユニット{unit_name} ON  ({temp:.3f}C >= {temp_on}C)")
+            log(f"  ユニット{unit_name} ON  ({sensor} {temp:.3f}C >= {temp_on}C)")
         elif temp <= temp_off and unit["relay_state"]:
             if write_relay_module(unit["relay_gpio"], False):
                 unit["relay_state"] = False
-            log(f"  ユニット{unit_name} OFF ({temp:.3f}C <= {temp_off}C)")
+            log(f"  ユニット{unit_name} OFF ({sensor} {temp:.3f}C <= {temp_off}C)")
         else:
-            log(f"  ユニット{unit_name} 保持 ({temp:.3f}C, relay={'ON' if unit['relay_state'] else 'OFF'})")
+            log(f"  ユニット{unit_name} 保持 ({sensor} {temp:.3f}C, relay={'ON' if unit['relay_state'] else 'OFF'})")
 
 
 def record_csv():

@@ -133,6 +133,7 @@
       <thead>
         <tr>
           <th>ユニット</th>
+          <th>制御センサ</th>
           <th>銅管部現在 (℃)</th>
           <th>吸気部現在 (℃)</th>
           <th>ON設定 (℃)</th>
@@ -343,11 +344,18 @@
         const editOff = _localTempEdits[u]?.temp_off;
         const valOn   = editOn  !== undefined ? editOn  : (cfg.temp_on  ?? '');
         const valOff  = editOff !== undefined ? editOff : (cfg.temp_off ?? '');
-        const copper  = fmtTemp(_currentStatus?.units?.[u]?.temperature);
-        const intake  = fmtTemp(_currentStatus?.units?.[u]?.intake_temperature);
+        const copper   = fmtTemp(_currentStatus?.units?.[u]?.temperature);
+        const intake   = fmtTemp(_currentStatus?.units?.[u]?.intake_temperature);
+        const ctrlSens = cfg.control_sensor || '銅管部温度';
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${u}</td>
+          <td>
+            <select id="cs_${u}" onchange="setControlSensor('${u}', this.value)">
+              <option value="銅管部温度" ${ctrlSens === '銅管部温度' ? 'selected' : ''}>銅管部</option>
+              <option value="吸気部温度" ${ctrlSens === '吸気部温度' ? 'selected' : ''}>吸気部</option>
+            </select>
+          </td>
           <td id="tc_${u}" style="color:#555">${copper}</td>
           <td id="ti_${u}" style="color:#555">${intake}</td>
           <td><input type="number" step="0.5" id="ton_${u}" value="${valOn}"
@@ -467,6 +475,17 @@
         });
         _localTempEdits = {};
         setMsg('tempMsg', '送信完了（Piが次の確認サイクルで反映します）', 'ok');
+        await reloadConfig();
+      }, 'tempMsg');
+    }
+
+    async function setControlSensor(unit, sensor) {
+      await withBusy(async () => {
+        setMsg('tempMsg', `ユニット${unit} 制御センサ → ${sensor === '銅管部温度' ? '銅管部' : '吸気部'} 送信中...`, '');
+        await writeConfig(config => {
+          if (config.units[unit]) config.units[unit].control_sensor = sensor;
+        });
+        setMsg('tempMsg', `ユニット${unit} 制御センサ変更完了`, 'ok');
         await reloadConfig();
       }, 'tempMsg');
     }

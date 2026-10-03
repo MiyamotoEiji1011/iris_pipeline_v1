@@ -12,6 +12,8 @@
 #                      "auto"   … temp_on/temp_off に基づいて電磁弁を自動制御
 #                      "manual" … Web から直接 ON/OFF を指示、自動制御は無効
 #   manual_command : 手動モード時の指示値 "ON" / "OFF"
+#   control_sensor : 自動制御で閾値比較に使うセンサ
+#                      "銅管部温度" / "吸気部温度"
 #
 # 現在値・状態（実行時に更新）
 #   銅管部温度  : 銅管センサの最新温度（float or None）
@@ -32,6 +34,7 @@ UNITS = {
         "temp_off":       None,
         "mode":           None,
         "manual_command": "OFF",
+        "control_sensor": "銅管部温度",
         # 現在値・状態（実行時に更新）
         "銅管部温度":   None,
         "吸気部温度":   None,
@@ -48,6 +51,7 @@ UNITS = {
         "temp_off":       None,
         "mode":           None,
         "manual_command": "OFF",
+        "control_sensor": "銅管部温度",
         "銅管部温度":   None,
         "吸気部温度":   None,
         "relay_state": False,
@@ -63,6 +67,7 @@ UNITS = {
         "temp_off":       None,
         "mode":           None,
         "manual_command": "OFF",
+        "control_sensor": "銅管部温度",
         "銅管部温度":   None,
         "吸気部温度":   None,
         "relay_state": False,
@@ -78,6 +83,7 @@ UNITS = {
         "temp_off":       None,
         "mode":           None,
         "manual_command": "OFF",
+        "control_sensor": "銅管部温度",
         "銅管部温度":   None,
         "吸気部温度":   None,
         "relay_state": False,
@@ -93,6 +99,7 @@ UNITS = {
         "temp_off":       None,
         "mode":           None,
         "manual_command": "OFF",
+        "control_sensor": "銅管部温度",
         "銅管部温度":   None,
         "吸気部温度":   None,
         "relay_state": False,
@@ -108,6 +115,7 @@ UNITS = {
         "temp_off":       None,
         "mode":           None,
         "manual_command": "OFF",
+        "control_sensor": "銅管部温度",
         "銅管部温度":   None,
         "吸気部温度":   None,
         "relay_state": False,
@@ -123,6 +131,7 @@ UNITS = {
         "temp_off":       None,
         "mode":           None,
         "manual_command": "OFF",
+        "control_sensor": "銅管部温度",
         "銅管部温度":   None,
         "吸気部温度":   None,
         "relay_state": False,
@@ -138,6 +147,7 @@ UNITS = {
         "temp_off":       None,
         "mode":           None,
         "manual_command": "OFF",
+        "control_sensor": "銅管部温度",
         "銅管部温度":   None,
         "吸気部温度":   None,
         "relay_state": False,

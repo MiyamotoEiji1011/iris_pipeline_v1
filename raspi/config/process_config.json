@@ -5,49 +5,57 @@
       "temp_on": 20,
       "temp_off": 10,
       "mode": "auto",
-      "manual_command": "OFF"
+      "manual_command": "OFF",
+      "control_sensor": "銅管部温度"
     },
     "B": {
       "temp_on": 20,
       "temp_off": 10,
       "mode": "auto",
-      "manual_command": "OFF"
+      "manual_command": "OFF",
+      "control_sensor": "銅管部温度"
     },
     "C": {
       "temp_on": 20,
       "temp_off": 10,
       "mode": "auto",
-      "manual_command": "OFF"
+      "manual_command": "OFF",
+      "control_sensor": "銅管部温度"
     },
     "D": {
       "temp_on": 40,
       "temp_off": 35,
       "mode": "auto",
-      "manual_command": "OFF"
+      "manual_command": "OFF",
+      "control_sensor": "銅管部温度"
     },
     "E": {
       "temp_on": 20,
       "temp_off": 10,
       "mode": "auto",
-      "manual_command": "OFF"
+      "manual_command": "OFF",
+      "control_sensor": "銅管部温度"
     },
     "F": {
       "temp_on": 20,
       "temp_off": 10,
       "mode": "auto",
-      "manual_command": "OFF"
+      "manual_command": "OFF",
+      "control_sensor": "銅管部温度"
     },
     "G": {
       "temp_on": 40,
       "temp_off": 35,
       "mode": "auto",
-      "manual_command": "OFF"
+      "manual_command": "OFF",
+      "control_sensor": "銅管部温度"
     },
     "H": {
       "temp_on": 40,
       "temp_off": 35,
       "mode": "auto",
-      "manual_command": "OFF"
+      "manual_command": "OFF",
+      "control_sensor": "銅管部温度"
     }
   }
 }
