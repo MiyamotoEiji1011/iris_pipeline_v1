@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-10-04T09:31:35+09:00",
+  "updated_at": "2026-10-04T09:31:46+09:00",
   "device": {
     "applied_config_version": 27
   },
   "units": {
     "A": {
-      "temperature": 23.187,
+      "temperature": 23.125,
       "intake_temperature": 23.75,
       "mode": "auto",
       "relay_actual": "OFF",
@@ -34,7 +34,7 @@
     },
     "E": {
       "temperature": 23.75,
-      "intake_temperature": 23.375,
+      "intake_temperature": 23.312,
       "mode": "auto",
       "relay_actual": "OFF",
       "sensor_ok": true
