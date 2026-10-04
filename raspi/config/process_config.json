@@ -1,37 +1,37 @@
 {
-  "version": 27,
+  "version": 28,
   "units": {
     "A": {
-      "temp_on": 25,
-      "temp_off": 24,
+      "temp_on": 22,
+      "temp_off": 21.9,
       "mode": "auto",
       "manual_command": "OFF",
       "control_sensor": "銅管部温度"
     },
     "B": {
-      "temp_on": 25,
-      "temp_off": 24,
+      "temp_on": 23,
+      "temp_off": 22.9,
       "mode": "auto",
       "manual_command": "OFF",
       "control_sensor": "銅管部温度"
     },
     "C": {
-      "temp_on": 25,
-      "temp_off": 24,
+      "temp_on": 22.5,
+      "temp_off": 22.4,
       "mode": "auto",
       "manual_command": "OFF",
       "control_sensor": "銅管部温度"
     },
     "D": {
-      "temp_on": 25,
-      "temp_off": 24,
+      "temp_on": 23.3,
+      "temp_off": 23.2,
       "mode": "auto",
       "manual_command": "OFF",
       "control_sensor": "銅管部温度"
     },
     "E": {
-      "temp_on": 25,
-      "temp_off": 24,
+      "temp_on": 22.2,
+      "temp_off": 22.1,
       "mode": "auto",
       "manual_command": "OFF",
       "control_sensor": "吸気部温度"
