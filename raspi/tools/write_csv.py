@@ -17,6 +17,7 @@ def _get_headers(units: dict) -> list[str]:
         headers += [
             f"({name})銅管部温度[℃]",
             f"({name})吸気部温度[℃]",
+            f"({name})制御センサ",
             f"({name})ON設定温度[℃]",
             f"({name})OFF設定温度[℃]",
             f"({name})電磁弁状態(ON/OFF)",
@@ -27,9 +28,11 @@ def _get_headers(units: dict) -> list[str]:
 def _get_row(units: dict, now: datetime) -> list:
     row = [now.strftime("%Y-%m-%d %H:%M:%S")]
     for unit in units.values():
+        sensor = unit.get("control_sensor", "銅管部温度")
         row += [
             unit["銅管部温度"],
             unit["吸気部温度"],
+            sensor,
             unit["temp_on"],
             unit["temp_off"],
             "ON" if unit["relay_state"] else "OFF",

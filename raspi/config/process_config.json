@@ -1,61 +1,13 @@
 {
-  "version": 22,
+  "version": 23,
   "units": {
-    "A": {
-      "temp_on": 25,
-      "temp_off": 24,
-      "mode": "auto",
-      "manual_command": "OFF",
-      "control_sensor": "銅管部温度"
-    },
-    "B": {
-      "temp_on": 25,
-      "temp_off": 24,
-      "mode": "auto",
-      "manual_command": "OFF",
-      "control_sensor": "銅管部温度"
-    },
-    "C": {
-      "temp_on": 25,
-      "temp_off": 24,
-      "mode": "auto",
-      "manual_command": "OFF",
-      "control_sensor": "銅管部温度"
-    },
-    "D": {
-      "temp_on": 25,
-      "temp_off": 24,
-      "mode": "auto",
-      "manual_command": "OFF",
-      "control_sensor": "銅管部温度"
-    },
-    "E": {
-      "temp_on": 25,
-      "temp_off": 24,
-      "mode": "auto",
-      "manual_command": "OFF",
-      "control_sensor": "銅管部温度"
-    },
-    "F": {
-      "temp_on": 25,
-      "temp_off": 24,
-      "mode": "auto",
-      "manual_command": "OFF",
-      "control_sensor": "銅管部温度"
-    },
-    "G": {
-      "temp_on": 25,
-      "temp_off": 24,
-      "mode": "auto",
-      "manual_command": "OFF",
-      "control_sensor": "銅管部温度"
-    },
-    "H": {
-      "temp_on": 25,
-      "temp_off": 24,
-      "mode": "auto",
-      "manual_command": "OFF",
-      "control_sensor": "銅管部温度"
-    }
+    "A": {"label": "ユニットA", "temp_on": 25, "temp_off": 24, "mode": "auto", "manual_command": "OFF", "control_sensor": "銅管部温度"},
+    "B": {"label": "ユニットB", "temp_on": 25, "temp_off": 24, "mode": "auto", "manual_command": "OFF", "control_sensor": "銅管部温度"},
+    "C": {"label": "ユニットC", "temp_on": 25, "temp_off": 24, "mode": "auto", "manual_command": "OFF", "control_sensor": "銅管部温度"},
+    "D": {"label": "ユニットD", "temp_on": 25, "temp_off": 24, "mode": "auto", "manual_command": "OFF", "control_sensor": "銅管部温度"},
+    "E": {"label": "ユニットE", "temp_on": 25, "temp_off": 24, "mode": "auto", "manual_command": "OFF", "control_sensor": "銅管部温度"},
+    "F": {"label": "ユニットF", "temp_on": 25, "temp_off": 24, "mode": "auto", "manual_command": "OFF", "control_sensor": "銅管部温度"},
+    "G": {"label": "ユニットG", "temp_on": 25, "temp_off": 24, "mode": "auto", "manual_command": "OFF", "control_sensor": "銅管部温度"},
+    "H": {"label": "ユニットH", "temp_on": 25, "temp_off": 24, "mode": "auto", "manual_command": "OFF", "control_sensor": "銅管部温度"}
   }
 }

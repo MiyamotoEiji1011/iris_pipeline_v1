@@ -347,9 +347,10 @@
         const copper   = fmtTemp(_currentStatus?.units?.[u]?.temperature);
         const intake   = fmtTemp(_currentStatus?.units?.[u]?.intake_temperature);
         const ctrlSens = cfg.control_sensor || '銅管部温度';
+        const label    = cfg.label || u;
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${u}</td>
+          <td title="${u}">${label}</td>
           <td>
             <select id="cs_${u}" onchange="setControlSensor('${u}', this.value)">
               <option value="銅管部温度" ${ctrlSens === '銅管部温度' ? 'selected' : ''}>銅管部</option>
@@ -381,9 +382,10 @@
 
         const tr = document.createElement('tr');
         tr.id = `valve_${u}`;
-        const tempVal = fmtTemp(_currentStatus?.units?.[u]?.temperature);
+        const tempVal  = fmtTemp(_currentStatus?.units?.[u]?.temperature);
+        const vlabel   = config.units[u]?.label || u;
         tr.innerHTML = `
-          <td><strong>${u}</strong></td>
+          <td title="${u}"><strong>${vlabel}</strong></td>
           <td id="vt_${u}" style="color:#555">${tempVal}</td>
           <td>
             <span class="mode-badge ${isAuto ? 'auto' : 'manual'}">${isAuto ? '自動' : '手動'}</span>

@@ -55,6 +55,7 @@ def _apply_units_config(config: dict, apply_manual: bool = True):
             unit["relay_state"] = False
             log(f"  ユニット{unit_name} モード変更 ({old_mode}→{new_mode}) 強制OFF")
 
+        unit["label"]          = cfg.get("label", unit_name)
         unit["temp_on"]        = cfg["temp_on"]
         unit["temp_off"]       = cfg["temp_off"]
         unit["mode"]           = cfg["mode"]
