@@ -51,11 +51,11 @@
 
     /* ---- システム状態 ---- */
     .status-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 28px;
     }
-    .status-item { font-size: 0.85rem; line-height: 1.6; }
+    .status-item { font-size: 0.85rem; line-height: 1.6; white-space: nowrap; }
     .status-label { color: #888; font-size: 0.75rem; display: block; }
     .dot {
       display: inline-block;
@@ -365,12 +365,26 @@
     // ===================================================================
     // UI レンダリング
     // ===================================================================
+    function clearLiveData() {
+      UNITS.forEach(u => {
+        ['tc_','ti_','vt_','vi_'].forEach(pre => {
+          const el = document.getElementById(pre + u);
+          if (el) el.textContent = '---';
+        });
+        const dotEl = document.getElementById(`vd_${u}`);
+        const txtEl = document.getElementById(`vr_${u}`);
+        if (dotEl) dotEl.className = 'relay-dot';
+        if (txtEl) txtEl.textContent = '---';
+      });
+    }
+
     function renderStatus(status) {
       if (!status) {
-        document.getElementById('onlineDot').className    = 'dot offline';
-        document.getElementById('onlineText').textContent = 'オフライン（未取得）';
-        document.getElementById('updatedAt').textContent  = '-';
+        document.getElementById('onlineDot').className     = 'dot offline';
+        document.getElementById('onlineText').textContent  = 'オフライン（未取得）';
+        document.getElementById('updatedAt').textContent   = '-';
         document.getElementById('elapsedText').textContent = '';
+        clearLiveData();
         return;
       }
       _lastUpdatedAt = new Date(status.updated_at).getTime();
@@ -381,8 +395,12 @@
       document.getElementById('updatedAt').textContent  = status.updated_at;
       updateElapsed();
 
-      updateTemperatureDisplay(status);
-      updateValveStatus(status);
+      if (online) {
+        updateTemperatureDisplay(status);
+        updateValveStatus(status);
+      } else {
+        clearLiveData();
+      }
     }
 
     function renderTempTable(config) {
