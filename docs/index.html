@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ベイシア古河総和店 制御パネル</title>
+  <script src="auth_config.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     body {
@@ -169,9 +170,95 @@
     }
     .dl-row select { font-size: 0.9rem; padding: 6px 8px; }
     .dl-row button { padding: 7px 16px; }
+
+    /* ---- ログインオーバーレイ ---- */
+    #loginOverlay {
+      position: fixed;
+      inset: 0;
+      background: #f0f2f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #loginOverlay.hidden { display: none; }
+    .login-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 32px 28px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.15);
+      width: 100%;
+      max-width: 320px;
+    }
+    .login-box h2 {
+      text-align: center;
+      margin: 0 0 6px;
+      font-size: 1rem;
+      color: #333;
+    }
+    .login-box .login-sub {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #888;
+      margin-bottom: 22px;
+    }
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .login-field label {
+      font-size: 0.8rem;
+      color: #555;
+      margin-bottom: 3px;
+      display: block;
+    }
+    .login-field input {
+      width: 100%;
+      padding: 9px 10px;
+      font-size: 0.95rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .login-field input:focus { outline: none; border-color: #4a90d9; }
+    #loginBtn {
+      width: 100%;
+      padding: 10px;
+      font-size: 0.95rem;
+    }
+    #loginErr {
+      margin-top: 10px;
+      font-size: 0.82rem;
+      color: #dc3545;
+      text-align: center;
+      min-height: 1.2em;
+    }
   </style>
 </head>
 <body>
+
+  <!-- ログインオーバーレイ -->
+  <div id="loginOverlay">
+    <div class="login-box">
+      <h2>ベイシア古河総和店</h2>
+      <p class="login-sub">制御パネル</p>
+      <div class="login-field">
+        <div>
+          <label>ユーザーID</label>
+          <input type="text" id="loginUser" autocomplete="username" placeholder="ID">
+        </div>
+        <div>
+          <label>パスワード</label>
+          <input type="password" id="loginPass" autocomplete="current-password" placeholder="Password"
+            onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+      <button id="loginBtn" onclick="doLogin()">ログイン</button>
+      <div id="loginErr"></div>
+    </div>
+  </div>
+
   <h1>ベイシア古河総和店 制御パネル</h1>
 
   <!-- システム状態 -->
@@ -628,9 +715,32 @@
       await fetchCSVList();
     }
 
-    setInterval(fetchStatus, 10000);
-    setInterval(updateElapsed, 1000);
-    init();
+    // ===================================================================
+    // ログイン
+    // ===================================================================
+    function doLogin() {
+      const user = document.getElementById('loginUser').value;
+      const pass = document.getElementById('loginPass').value;
+      if (user === AUTH_USER && pass === AUTH_PASS) {
+        sessionStorage.setItem('iris_auth', '1');
+        document.getElementById('loginOverlay').classList.add('hidden');
+        startApp();
+      } else {
+        document.getElementById('loginErr').textContent = 'IDまたはパスワードが違います';
+        document.getElementById('loginPass').value = '';
+      }
+    }
+
+    function startApp() {
+      setInterval(fetchStatus, 10000);
+      setInterval(updateElapsed, 1000);
+      init();
+    }
+
+    if (sessionStorage.getItem('iris_auth') === '1') {
+      document.getElementById('loginOverlay').classList.add('hidden');
+      startApp();
+    }
   </script>
 </body>
 </html>
