@@ -140,6 +140,47 @@ git pull
 sudo systemctl restart iris_pipeline
 ```
 
+## システム監視デーモン（iris_system）
+
+ネットワーク状態 LED と リセット SW を管理する独立デーモン。
+
+### sudo reboot の許可設定（初回のみ）
+```bash
+sudo visudo
+```
+以下の行を末尾に追加して保存：
+```
+pi ALL=(ALL) NOPASSWD: /sbin/reboot
+```
+
+### 初回登録
+```bash
+sudo cp ~/iris_pipeline_v1/raspi/iris_system.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable iris_system
+sudo systemctl start iris_system
+```
+
+### 状態確認 / ログ
+```bash
+sudo systemctl status iris_system
+journalctl -u iris_system -f
+```
+
+### 停止 / 起動 / 再起動
+```bash
+sudo systemctl stop iris_system
+sudo systemctl start iris_system
+sudo systemctl restart iris_system
+```
+
+### コード更新後の反映手順
+```bash
+cd ~/iris_pipeline_v1
+git pull
+sudo systemctl restart iris_system
+```
+
 # webapp
 https://miyamotoeiji1011.github.io/iris_pipeline_v1/
 

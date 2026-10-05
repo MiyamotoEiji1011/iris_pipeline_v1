@@ -1,0 +1,18 @@
+[Unit]
+Description=Iris Pipeline system monitor (network LED + reset switch)
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/iris_pipeline_v1/raspi
+Environment="VIRTUAL_ENV=/home/pi/iris_pipeline_v1/raspi/.venv"
+Environment="PATH=/home/pi/iris_pipeline_v1/raspi/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/home/pi/iris_pipeline_v1/raspi/.venv/bin/python system.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
