@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO  # type: ignore
 import json
 import os
+import threading
 import time
 from datetime import datetime
 from config.units import UNITS
@@ -19,13 +20,45 @@ _PROCESS_CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config/process_c
 _DATA_DIR            = os.path.join(os.path.dirname(__file__), "../data")
 
 DAEMON_LED_GPIO = 25
+API_LED_GPIO    = 27
 
 _applied_version: int       = 0
 _pending_config:  dict | None = None
+_api_led_stop:    threading.Event | None = None
 
 
 def log(msg):
     print(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}")
+
+
+# ---------------------------------------------------------------------------
+# API LED（GPIO27）点滅制御
+# ---------------------------------------------------------------------------
+
+def _blink_worker(stop_event: threading.Event):
+    """別スレッドで API_LED を 0.3秒周期で点滅させる。"""
+    while not stop_event.is_set():
+        GPIO.output(API_LED_GPIO, True)
+        stop_event.wait(0.3)
+        GPIO.output(API_LED_GPIO, False)
+        stop_event.wait(0.3)
+    GPIO.output(API_LED_GPIO, False)
+
+
+def start_api_led():
+    global _api_led_stop
+    if _api_led_stop is not None:
+        return
+    _api_led_stop = threading.Event()
+    threading.Thread(target=_blink_worker, args=(_api_led_stop,), daemon=True).start()
+
+
+def stop_api_led():
+    global _api_led_stop
+    if _api_led_stop is None:
+        return
+    _api_led_stop.set()
+    _api_led_stop = None
 
 
 # ---------------------------------------------------------------------------
@@ -97,8 +130,10 @@ def check_and_apply_config():
 # ---------------------------------------------------------------------------
 
 def cleanup():
+    stop_api_led()
     try:
         GPIO.output(DAEMON_LED_GPIO, False)
+        GPIO.output(API_LED_GPIO, False)
     except RuntimeError:
         pass
     GPIO.cleanup()
@@ -109,6 +144,7 @@ def setup():
     cleanup()
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(DAEMON_LED_GPIO, GPIO.OUT, initial=GPIO.LOW)
+    GPIO.setup(API_LED_GPIO,    GPIO.OUT, initial=GPIO.LOW)
     GPIO.output(DAEMON_LED_GPIO, True)
     log("GPIO セットアップ完了")
     load_process_config()
@@ -212,7 +248,11 @@ def main():
             if now - last_data_push >= DATA_PUSH_INTERVAL:
                 last_data_push = now
                 log("----git push----")
-                git_push_data()
+                start_api_led()
+                try:
+                    git_push_data()
+                finally:
+                    stop_api_led()
 
             time.sleep(0.1)
 
