@@ -8,109 +8,171 @@
     *, *::before, *::after { box-sizing: border-box; }
     body {
       font-family: sans-serif;
-      max-width: 820px;
-      margin: 40px auto;
-      padding: 0 16px;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 16px;
       background: #f0f2f5;
       color: #333;
+      font-size: 14px;
     }
-    h1 { font-size: 1.4rem; margin-bottom: 20px; }
-    h2 { font-size: 1rem; color: #444; margin: 0 0 14px; }
+    h1 { font-size: 1.3rem; margin: 0 0 16px; }
+    h2 { font-size: 0.95rem; color: #444; margin: 0 0 12px; font-weight: 600; }
     .card {
       background: #fff;
       border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 1px 4px rgba(0,0,0,.1);
-      margin-bottom: 16px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.1);
+      margin-bottom: 14px;
     }
 
     /* ---- ボタン ---- */
     button {
-      padding: 8px 16px;
-      font-size: 0.9rem;
+      padding: 7px 14px;
+      font-size: 0.85rem;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       background: #4a90d9;
       color: #fff;
+      white-space: nowrap;
     }
-    button:hover:not(:disabled) { background: #357abd; }
-    button:disabled { background: #aaa; cursor: not-allowed; }
+    button:hover:not(:disabled) { filter: brightness(0.9); }
+    button:disabled { background: #bbb; cursor: not-allowed; }
     button.green  { background: #28a745; }
-    button.green:hover:not(:disabled) { background: #218838; }
     button.red    { background: #dc3545; }
-    button.red:hover:not(:disabled)   { background: #c82333; }
     button.gray   { background: #6c757d; }
-    button.gray:hover:not(:disabled)  { background: #5a6268; }
-    button.sm     { padding: 4px 10px; font-size: 0.8rem; }
+    button.sm     { padding: 4px 10px; font-size: 0.78rem; }
+    .btn-group    { display: flex; gap: 5px; flex-wrap: wrap; }
+
+    /* ---- メッセージ ---- */
+    .msg { font-size: 0.82rem; color: #666; }
+    .msg.err { color: #dc3545; }
+    .msg.ok  { color: #28a745; }
 
     /* ---- システム状態 ---- */
-    .status-row { display: flex; gap: 24px; flex-wrap: wrap; }
-    .status-item { font-size: 0.9rem; }
-    .status-item span { font-weight: bold; }
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 8px;
+    }
+    .status-item { font-size: 0.85rem; line-height: 1.6; }
+    .status-label { color: #888; font-size: 0.75rem; display: block; }
     .dot {
       display: inline-block;
-      width: 10px; height: 10px;
+      width: 9px; height: 9px;
       border-radius: 50%;
       margin-right: 4px;
-      background: #aaa;
+      background: #bbb;
+      vertical-align: middle;
     }
     .dot.online  { background: #28a745; }
     .dot.offline { background: #dc3545; }
     .badge {
       display: inline-block;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 0.78rem;
-      font-weight: bold;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
     }
     .badge.ok      { background: #d4edda; color: #155724; }
     .badge.pending { background: #fff3cd; color: #856404; }
 
+    /* ---- テーブル共通 ---- */
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; white-space: nowrap; }
+    th {
+      text-align: left;
+      padding: 5px 8px;
+      border-bottom: 2px solid #dee2e6;
+      color: #555;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+    td { padding: 5px 8px; border-bottom: 1px solid #f2f2f2; vertical-align: middle; }
+    td:first-child { font-weight: 600; }
+
     /* ---- 温度設定テーブル ---- */
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    th { text-align: left; padding: 6px 8px; border-bottom: 2px solid #dee2e6; color: #555; font-size: 0.82rem; }
-    td { padding: 6px 8px; border-bottom: 1px solid #f0f0f0; }
-    td:first-child { font-weight: bold; width: 64px; }
     input[type="number"] {
-      width: 80px;
-      padding: 4px 6px;
-      font-size: 0.9rem;
+      width: 65px;
+      padding: 3px 5px;
+      font-size: 0.85rem;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
     input[type="number"].edited { border-color: #f0a500; background: #fffbe6; }
-    .apply-row { margin-top: 12px; display: flex; align-items: center; gap: 12px; }
-    .msg { font-size: 0.85rem; color: #555; }
-    .msg.err  { color: #dc3545; }
-    .msg.ok   { color: #28a745; }
-
-    /* ---- 電磁弁制御テーブル ---- */
-    .valve-table td { vertical-align: middle; }
-    .relay-dot {
-      display: inline-block;
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      margin-right: 6px;
-      vertical-align: middle;
-      background: #ccc;
+    select {
+      padding: 3px 5px;
+      font-size: 0.82rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
     }
-    .relay-dot.on  { background: #28a745; box-shadow: 0 0 6px #28a745; }
-    .relay-dot.off { background: #dc3545; }
+    .apply-row { margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    /* ---- 電磁弁カードグリッド ---- */
+    .unit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 10px;
+    }
+    .unit-card {
+      border: 1px solid #e4e4e4;
+      border-radius: 6px;
+      padding: 12px;
+      background: #fafafa;
+    }
+    .uc-head {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .uc-name { font-weight: 700; font-size: 0.9rem; }
     .mode-badge {
-      display: inline-block;
-      padding: 2px 8px;
+      padding: 1px 7px;
       border-radius: 10px;
-      font-size: 0.78rem;
-      font-weight: bold;
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
     }
     .mode-badge.auto   { background: #cce5ff; color: #004085; }
     .mode-badge.manual { background: #f8d7da; color: #721c24; }
-    .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .uc-temps {
+      display: flex;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: #555;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .uc-temps span { white-space: nowrap; }
+    .uc-relay {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .relay-dot {
+      width: 13px; height: 13px;
+      border-radius: 50%;
+      background: #ccc;
+      flex-shrink: 0;
+    }
+    .relay-dot.on  { background: #28a745; box-shadow: 0 0 5px #28a745; }
+    .relay-dot.off { background: #dc3545; }
 
     /* ---- CSVダウンロード ---- */
-    .csv-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-    .csv-list button { font-size: 0.85rem; padding: 6px 12px; }
+    .dl-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .dl-row select { font-size: 0.9rem; padding: 6px 8px; }
+    .dl-row button { padding: 7px 16px; }
   </style>
 </head>
 <body>
@@ -119,29 +181,40 @@
   <!-- システム状態 -->
   <div class="card">
     <h2>システム状態</h2>
-    <div class="status-row">
-      <div class="status-item"><span class="dot" id="onlineDot"></span><span id="onlineText">確認中...</span></div>
-      <div class="status-item">最終更新: <span id="updatedAt">-</span></div>
-      <div class="status-item">Config: <span id="configBadge">-</span></div>
+    <div class="status-grid">
+      <div class="status-item">
+        <span class="status-label">接続状態</span>
+        <span class="dot" id="onlineDot"></span><span id="onlineText">確認中...</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">最終更新</span>
+        <span id="updatedAt">-</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Config</span>
+        <span id="configBadge">-</span>
+      </div>
     </div>
   </div>
 
   <!-- 温度設定 -->
   <div class="card">
     <h2>温度設定</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ユニット</th>
-          <th>制御センサ</th>
-          <th>銅管部現在 (℃)</th>
-          <th>吸気部現在 (℃)</th>
-          <th>ON設定 (℃)</th>
-          <th>OFF設定 (℃)</th>
-        </tr>
-      </thead>
-      <tbody id="tempTableBody"></tbody>
-    </table>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ユニット</th>
+            <th>センサ</th>
+            <th>銅管(℃)</th>
+            <th>吸気(℃)</th>
+            <th>ON設定</th>
+            <th>OFF設定</th>
+          </tr>
+        </thead>
+        <tbody id="tempTableBody"></tbody>
+      </table>
+    </div>
     <div class="apply-row">
       <button id="applyTempBtn" disabled onclick="applyTempSettings()">反映</button>
       <span class="msg" id="tempMsg"></span>
@@ -151,25 +224,18 @@
   <!-- 電磁弁制御 -->
   <div class="card">
     <h2>電磁弁制御</h2>
-    <table class="valve-table">
-      <thead>
-        <tr>
-          <th>ユニット</th>
-          <th>銅管部 (℃)</th>
-          <th>モード</th>
-          <th>弁状態</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody id="valveTableBody"></tbody>
-    </table>
-    <span class="msg" id="valveMsg" style="margin-top:8px;display:block;"></span>
+    <div class="unit-grid" id="valveGrid"></div>
+    <span class="msg" id="valveMsg" style="margin-top:10px;display:block;"></span>
   </div>
 
   <!-- データダウンロード -->
   <div class="card">
     <h2>データダウンロード</h2>
-    <div class="csv-list" id="csvList">読み込み中...</div>
+    <div class="dl-row">
+      <select id="dlYear" onchange="onYearChange()"><option>---</option></select>
+      <select id="dlMonth"><option>---</option></select>
+      <button class="green" id="dlBtn" onclick="downloadSelectedCSV()">ダウンロード</button>
+    </div>
     <span class="msg" id="dlMsg" style="margin-top:8px;display:block;"></span>
   </div>
 
@@ -181,32 +247,35 @@
     const REPO  = 'iris_pipeline_v1';
     // ★ PAT を分割して設定（GitHub Push Protection 回避）
     const _T1 = "github_pat_";
-    const _T2 = "11BLT3Y3Y0hkmnBUkMF1EF_L79Ryo4q2DE4oYPY7vFN5uJBGjwuSecRXjMwv2FEEu5X2T2WUU2jsTbQAPV"; // ← ここに残りを入力
+    const _T2 = "11BLT3Y3Y0hkmnBUkMF1EF_L79Ryo4q2DE4oYPY7vFN5uJBGjwuSecRXjMwv2FEEu5X2T2WUU2jsTbQAPV";
     const TOKEN = _T1 + _T2;
 
-    const CONFIG_API  = `https://api.github.com/repos/${OWNER}/${REPO}/contents/raspi/config/process_config.json`;
-    const STATUS_API  = `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/status.json`;
-    const DATA_API    = `https://api.github.com/repos/${OWNER}/${REPO}/contents/data`;
-    const UNITS       = ['A','B','C','D','E','F','G','H'];
-    const ONLINE_MS   = 10 * 60 * 1000; // 10分以内なら「オンライン」
+    const CONFIG_API = `https://api.github.com/repos/${OWNER}/${REPO}/contents/raspi/config/process_config.json`;
+    const STATUS_API = `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/status.json`;
+    const DATA_API   = `https://api.github.com/repos/${OWNER}/${REPO}/contents/data`;
+    const UNITS      = ['A','B','C','D','E','F','G','H'];
+    const ONLINE_MS  = 10 * 60 * 1000;
 
     // ===================================================================
     // 状態
     // ===================================================================
-    let _busy             = false;
-    let _currentStatus    = null;
-    let _statusEtag       = null;
-    let _lastWrittenVer   = 0;
-    let _localTempEdits   = {}; // { unit: { temp_on, temp_off } }
+    let _busy           = false;
+    let _currentStatus  = null;
+    let _statusEtag     = null;
+    let _lastWrittenVer = 0;
+    let _localTempEdits = {};
+    let _csvFiles       = [];
 
     // ===================================================================
     // ヘルパ
     // ===================================================================
-    function githubHeaders() {
-      return { 'Authorization': `Bearer ${TOKEN}`, 'Accept': 'application/vnd.github+json' };
-    }
-    function b64encode(str) { return btoa(unescape(encodeURIComponent(str))); }
-    function b64decode(str) { return decodeURIComponent(escape(atob(str.replace(/\n/g, '')))); }
+    const githubHeaders = () => ({
+      'Authorization': `Bearer ${TOKEN}`,
+      'Accept': 'application/vnd.github+json'
+    });
+    const b64encode = s => btoa(unescape(encodeURIComponent(s)));
+    const b64decode = s => decodeURIComponent(escape(atob(s.replace(/\n/g, ''))));
+    const fmtTemp   = v => (v !== null && v !== undefined) ? Number(v).toFixed(1) : '---';
 
     function setMsg(id, text, type = '') {
       const el = document.getElementById(id);
@@ -218,24 +287,17 @@
       if (_busy) return;
       _busy = true;
       refreshButtonStates();
-      try {
-        await fn();
-      } catch (e) {
-        if (msgId) setMsg(msgId, `エラー: ${e.message}`, 'err');
-      } finally {
-        _busy = false;
-        refreshButtonStates();
-      }
+      try { await fn(); }
+      catch (e) { if (msgId) setMsg(msgId, `エラー: ${e.message}`, 'err'); }
+      finally { _busy = false; refreshButtonStates(); }
     }
 
     function refreshButtonStates() {
-      document.querySelectorAll('button').forEach(b => {
-        if (b.dataset.alwaysCheck) return;
-        b.disabled = _busy;
-      });
-      // 反映ボタンは編集がある場合のみ有効
+      document.querySelectorAll('button').forEach(b => { b.disabled = _busy; });
       const hasEdits = Object.keys(_localTempEdits).length > 0;
       document.getElementById('applyTempBtn').disabled = _busy || !hasEdits;
+      document.getElementById('dlBtn').disabled =
+        _busy || document.getElementById('dlYear').value === '---';
     }
 
     // ===================================================================
@@ -252,15 +314,14 @@
       const { sha, config } = await fetchConfig();
       updater(config);
       config.version = (config.version || 0) + 1;
-      const body = {
-        message: `config: update v${config.version}`,
-        content: b64encode(JSON.stringify(config, null, 2)),
-        sha
-      };
       const res = await fetch(CONFIG_API, {
         method: 'PUT',
         headers: { ...githubHeaders(), 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: JSON.stringify({
+          message: `config: update v${config.version}`,
+          content: b64encode(JSON.stringify(config, null, 2)),
+          sha
+        })
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -279,17 +340,16 @@
       if (res.status === 404) { renderStatus(null); return; }
       if (!res.ok) return;
       _statusEtag = res.headers.get('ETag');
-      const data = await res.json();
-      _currentStatus = JSON.parse(b64decode(data.content));
+      _currentStatus = JSON.parse(b64decode((await res.json()).content));
       renderStatus(_currentStatus);
     }
 
     async function fetchCSVList() {
       const res = await fetch(DATA_API, { headers: githubHeaders() });
-      if (!res.ok) { document.getElementById('csvList').textContent = '取得失敗'; return; }
+      if (!res.ok) { setMsg('dlMsg', 'ファイル一覧の取得失敗', 'err'); return; }
       const files = await res.json();
-      const csvs  = files.filter(f => f.name.endsWith('.csv') && f.name !== 'sample.csv');
-      renderCSVList(csvs);
+      _csvFiles = files.filter(f => /^\d{4}_\d{2}\.csv$/.test(f.name));
+      renderCSVDropdowns();
     }
 
     // ===================================================================
@@ -297,134 +357,108 @@
     // ===================================================================
     function renderStatus(status) {
       if (!status) {
-        document.getElementById('onlineDot').className  = 'dot offline';
+        document.getElementById('onlineDot').className    = 'dot offline';
         document.getElementById('onlineText').textContent = 'オフライン（未取得）';
         document.getElementById('updatedAt').textContent  = '-';
         return;
       }
-
-      // オンライン判定
-      const updatedAt = new Date(status.updated_at);
-      const diffMs    = Date.now() - updatedAt.getTime();
-      const online    = diffMs < ONLINE_MS;
-      document.getElementById('onlineDot').className   = 'dot ' + (online ? 'online' : 'offline');
-      document.getElementById('onlineText').textContent = online ? 'オンライン' : 'オフライン（通信停止の可能性）';
-
-      // 最終更新 + 経過時間
+      const diffMs  = Date.now() - new Date(status.updated_at).getTime();
+      const online  = diffMs < ONLINE_MS;
       const diffSec = Math.floor(diffMs / 1000);
       const elapsed = diffSec < 60 ? `${diffSec}秒前` : `${Math.floor(diffSec / 60)}分前`;
-      document.getElementById('updatedAt').textContent = `${status.updated_at} (${elapsed})`;
+
+      document.getElementById('onlineDot').className    = 'dot ' + (online ? 'online' : 'offline');
+      document.getElementById('onlineText').textContent = online ? 'オンライン' : 'オフライン（通信停止の可能性）';
+      document.getElementById('updatedAt').textContent  = `${status.updated_at} (${elapsed})`;
 
       updateConfigBadge(status.device?.applied_config_version);
-      renderValveStatus(status);
       updateTemperatureDisplay(status);
+      updateValveStatus(status);
     }
 
     function updateConfigBadge(appliedVer) {
-      const el     = document.getElementById('configBadge');
-      const piVer  = appliedVer ?? _currentStatus?.device?.applied_config_version;
+      const el    = document.getElementById('configBadge');
+      const piVer = appliedVer ?? _currentStatus?.device?.applied_config_version;
       if (piVer === undefined) { el.innerHTML = '-'; return; }
       if (_lastWrittenVer > 0 && piVer < _lastWrittenVer) {
-        el.innerHTML = `v${_lastWrittenVer} <span class="badge pending">反映待ち（Pi: v${piVer}）</span>`;
+        el.innerHTML = `v${_lastWrittenVer} <span class="badge pending">反映待ち (Pi: v${piVer})</span>`;
       } else {
         el.innerHTML = `v${piVer} <span class="badge ok">反映済み</span>`;
       }
-    }
-
-    function fmtTemp(val) {
-      return (val !== null && val !== undefined) ? Number(val).toFixed(1) : '---';
     }
 
     function renderTempTable(config) {
       const tbody = document.getElementById('tempTableBody');
       tbody.innerHTML = '';
       UNITS.forEach(u => {
-        const cfg     = config.units[u] || {};
-        const editOn  = _localTempEdits[u]?.temp_on;
-        const editOff = _localTempEdits[u]?.temp_off;
-        const valOn   = editOn  !== undefined ? editOn  : (cfg.temp_on  ?? '');
-        const valOff  = editOff !== undefined ? editOff : (cfg.temp_off ?? '');
+        const cfg      = config.units[u] || {};
+        const editOn   = _localTempEdits[u]?.temp_on;
+        const editOff  = _localTempEdits[u]?.temp_off;
+        const valOn    = editOn  !== undefined ? editOn  : (cfg.temp_on  ?? '');
+        const valOff   = editOff !== undefined ? editOff : (cfg.temp_off ?? '');
         const copper   = fmtTemp(_currentStatus?.units?.[u]?.temperature);
         const intake   = fmtTemp(_currentStatus?.units?.[u]?.intake_temperature);
-        const ctrlSens = cfg.control_sensor || '銅管部温度';
+        const ctrl     = cfg.control_sensor || '銅管部温度';
         const label    = cfg.label || u;
-        const tr = document.createElement('tr');
+        const tr       = document.createElement('tr');
         tr.innerHTML = `
           <td title="${u}">${label}</td>
-          <td>
-            <select id="cs_${u}" onchange="setControlSensor('${u}', this.value)">
-              <option value="銅管部温度" ${ctrlSens === '銅管部温度' ? 'selected' : ''}>銅管部</option>
-              <option value="吸気部温度" ${ctrlSens === '吸気部温度' ? 'selected' : ''}>吸気部</option>
-            </select>
-          </td>
-          <td id="tc_${u}" style="color:#555">${copper}</td>
-          <td id="ti_${u}" style="color:#555">${intake}</td>
+          <td><select id="cs_${u}" onchange="setControlSensor('${u}',this.value)">
+            <option value="銅管部温度" ${ctrl==='銅管部温度'?'selected':''}>銅管部</option>
+            <option value="吸気部温度" ${ctrl==='吸気部温度'?'selected':''}>吸気部</option>
+          </select></td>
+          <td id="tc_${u}">${copper}</td>
+          <td id="ti_${u}">${intake}</td>
           <td><input type="number" step="0.5" id="ton_${u}" value="${valOn}"
-               class="${editOn !== undefined ? 'edited' : ''}"
-               oninput="onTempInput('${u}','temp_on',this.value)"></td>
+            class="${editOn!==undefined?'edited':''}"
+            oninput="onTempInput('${u}','temp_on',this.value)"></td>
           <td><input type="number" step="0.5" id="toff_${u}" value="${valOff}"
-               class="${editOff !== undefined ? 'edited' : ''}"
-               oninput="onTempInput('${u}','temp_off',this.value)"></td>
+            class="${editOff!==undefined?'edited':''}"
+            oninput="onTempInput('${u}','temp_off',this.value)"></td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    function renderValveTable(config) {
-      const tbody = document.getElementById('valveTableBody');
-      tbody.innerHTML = '';
+    function renderValveGrid(config) {
+      const grid = document.getElementById('valveGrid');
+      grid.innerHTML = '';
       UNITS.forEach(u => {
         const cfg    = config.units[u] || {};
-        const mode   = cfg.mode || '-';
-        const isAuto = mode === 'auto';
-        const relayFromStatus = _currentStatus?.units?.[u]?.relay_actual;
-        const relayOn = relayFromStatus === 'ON';
+        const isAuto = cfg.mode === 'auto';
+        const label  = cfg.label || u;
+        const relay  = _currentStatus?.units?.[u]?.relay_actual;
+        const relayOn = relay === 'ON';
+        const copper = fmtTemp(_currentStatus?.units?.[u]?.temperature);
+        const intake = fmtTemp(_currentStatus?.units?.[u]?.intake_temperature);
 
-        const tr = document.createElement('tr');
-        tr.id = `valve_${u}`;
-        const tempVal  = fmtTemp(_currentStatus?.units?.[u]?.temperature);
-        const vlabel   = config.units[u]?.label || u;
-        tr.innerHTML = `
-          <td title="${u}"><strong>${vlabel}</strong></td>
-          <td id="vt_${u}" style="color:#555">${tempVal}</td>
-          <td>
-            <span class="mode-badge ${isAuto ? 'auto' : 'manual'}">${isAuto ? '自動' : '手動'}</span>
-          </td>
-          <td>
-            <span class="relay-dot ${relayFromStatus ? (relayOn ? 'on' : 'off') : ''}"></span>
-            ${relayFromStatus ? (relayOn ? 'ON' : 'OFF') : '-'}
-          </td>
-          <td>
-            <div class="btn-group">
-              <button class="sm gray" onclick="toggleMode('${u}')">
-                ${isAuto ? '手動へ' : '自動へ'}
-              </button>
-              ${!isAuto ? `
-                <button class="sm green" onclick="setManualCommand('${u}','ON')">ON</button>
-                <button class="sm red"   onclick="setManualCommand('${u}','OFF')">OFF</button>
-              ` : ''}
-            </div>
-          </td>
+        const card = document.createElement('div');
+        card.className = 'unit-card';
+        card.id = `valve_${u}`;
+        card.innerHTML = `
+          <div class="uc-head">
+            <span class="uc-name" title="${u}">${label}</span>
+            <span class="mode-badge ${isAuto?'auto':'manual'}" id="vm_${u}">${isAuto?'自動':'手動'}</span>
+          </div>
+          <div class="uc-temps">
+            <span>銅管 <b id="vt_${u}">${copper}</b>℃</span>
+            <span>吸気 <b id="vi_${u}">${intake}</b>℃</span>
+          </div>
+          <div class="uc-relay">
+            <span class="relay-dot ${relay?(relayOn?'on':'off'):''}" id="vd_${u}"></span>
+            <span id="vr_${u}">${relay||'-'}</span>
+          </div>
+          <div class="btn-group">
+            <button class="sm gray" id="vbm_${u}" onclick="toggleMode('${u}')">
+              ${isAuto?'手動へ':'自動へ'}
+            </button>
+            <button class="sm green" id="vbon_${u}" onclick="setManualCommand('${u}','ON')"
+              style="${isAuto?'display:none':''}">ON</button>
+            <button class="sm red" id="vboff_${u}" onclick="setManualCommand('${u}','OFF')"
+              style="${isAuto?'display:none':''}">OFF</button>
+          </div>
         `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderValveStatus(status) {
-      // status.json 更新時に弁状態列だけ更新
-      UNITS.forEach(u => {
-        const row = document.getElementById(`valve_${u}`);
-        if (!row) return;
-        const relayActual = status.units?.[u]?.relay_actual;
-        const relayOn     = relayActual === 'ON';
-        const dotEl  = row.querySelector('.relay-dot');
-        const textEl = dotEl?.nextSibling;
-        if (dotEl) {
-          dotEl.className = 'relay-dot ' + (relayActual ? (relayOn ? 'on' : 'off') : '');
-        }
-        if (textEl) {
-          textEl.textContent = relayActual ? ` ${relayActual}` : ' -';
-        }
+        grid.appendChild(card);
       });
     }
 
@@ -432,26 +466,44 @@
       UNITS.forEach(u => {
         const copper = fmtTemp(status.units?.[u]?.temperature);
         const intake = fmtTemp(status.units?.[u]?.intake_temperature);
-        const tcEl = document.getElementById(`tc_${u}`);
-        const tiEl = document.getElementById(`ti_${u}`);
-        const vtEl = document.getElementById(`vt_${u}`);
-        if (tcEl) tcEl.textContent = copper;
-        if (tiEl) tiEl.textContent = intake;
-        if (vtEl) vtEl.textContent = copper;
+        ['tc_','ti_','vt_','vi_'].forEach((pre, i) => {
+          const el = document.getElementById(pre + u);
+          if (el) el.textContent = i % 2 === 0 ? copper : intake;
+        });
       });
     }
 
-    function renderCSVList(files) {
-      const el = document.getElementById('csvList');
-      if (!files.length) { el.textContent = 'CSVファイルなし'; return; }
-      el.innerHTML = '';
-      files.sort((a, b) => b.name.localeCompare(a.name)).forEach(f => {
-        const btn = document.createElement('button');
-        btn.className   = 'green';
-        btn.textContent = f.name;
-        btn.onclick     = () => downloadCSV(f.name);
-        el.appendChild(btn);
+    function updateValveStatus(status) {
+      UNITS.forEach(u => {
+        const relay   = status.units?.[u]?.relay_actual;
+        const relayOn = relay === 'ON';
+        const dotEl = document.getElementById(`vd_${u}`);
+        const txtEl = document.getElementById(`vr_${u}`);
+        if (dotEl) dotEl.className = 'relay-dot ' + (relay ? (relayOn ? 'on' : 'off') : '');
+        if (txtEl) txtEl.textContent = relay || '-';
       });
+    }
+
+    function renderCSVDropdowns() {
+      const years = [...new Set(_csvFiles.map(f => f.name.split('_')[0]))].sort().reverse();
+      const yearSel = document.getElementById('dlYear');
+      yearSel.innerHTML = years.length
+        ? years.map(y => `<option value="${y}">${y}年</option>`).join('')
+        : '<option value="">---</option>';
+      onYearChange();
+    }
+
+    function onYearChange() {
+      const year     = document.getElementById('dlYear').value;
+      const months   = _csvFiles
+        .filter(f => f.name.startsWith(year + '_'))
+        .map(f => parseInt(f.name.split('_')[1]))
+        .sort((a, b) => b - a);
+      const monthSel = document.getElementById('dlMonth');
+      monthSel.innerHTML = months.length
+        ? months.map(m => `<option value="${String(m).padStart(2,'0')}">${m}月</option>`).join('')
+        : '<option value="">---</option>';
+      refreshButtonStates();
     }
 
     // ===================================================================
@@ -460,8 +512,8 @@
     function onTempInput(unit, key, value) {
       if (!_localTempEdits[unit]) _localTempEdits[unit] = {};
       _localTempEdits[unit][key] = value;
-      const inputId = key === 'temp_on' ? `ton_${unit}` : `toff_${unit}`;
-      document.getElementById(inputId).classList.add('edited');
+      document.getElementById(key === 'temp_on' ? `ton_${unit}` : `toff_${unit}`)
+        .classList.add('edited');
       refreshButtonStates();
     }
 
@@ -483,52 +535,55 @@
 
     async function setControlSensor(unit, sensor) {
       await withBusy(async () => {
-        setMsg('tempMsg', `ユニット${unit} 制御センサ → ${sensor === '銅管部温度' ? '銅管部' : '吸気部'} 送信中...`, '');
+        setMsg('tempMsg', `センサ変更中...`, '');
         await writeConfig(config => {
           if (config.units[unit]) config.units[unit].control_sensor = sensor;
         });
-        setMsg('tempMsg', `ユニット${unit} 制御センサ変更完了`, 'ok');
+        setMsg('tempMsg', `${unit} 制御センサ変更完了`, 'ok');
         await reloadConfig();
       }, 'tempMsg');
     }
 
     async function toggleMode(unit) {
       await withBusy(async () => {
-        setMsg('valveMsg', `ユニット${unit} モード切替中...`, '');
+        setMsg('valveMsg', `${unit} モード切替中...`, '');
         await writeConfig(config => {
           const u = config.units[unit];
           if (!u) return;
-          u.mode           = u.mode === 'auto' ? 'manual' : 'auto';
-          u.manual_command = 'OFF'; // モード変更時は常にOFF
+          u.mode = u.mode === 'auto' ? 'manual' : 'auto';
+          u.manual_command = 'OFF';
         });
-        setMsg('valveMsg', `ユニット${unit} モード切替完了`, 'ok');
+        setMsg('valveMsg', `${unit} モード切替完了`, 'ok');
         await reloadConfig();
       }, 'valveMsg');
     }
 
     async function setManualCommand(unit, command) {
       await withBusy(async () => {
-        setMsg('valveMsg', `ユニット${unit} → ${command} 送信中...`, '');
+        setMsg('valveMsg', `${unit} → ${command} 送信中...`, '');
         await writeConfig(config => {
           if (config.units[unit]) config.units[unit].manual_command = command;
         });
-        setMsg('valveMsg', `ユニット${unit} → ${command} 送信完了`, 'ok');
+        setMsg('valveMsg', `${unit} → ${command} 送信完了`, 'ok');
         await reloadConfig();
       }, 'valveMsg');
     }
 
-    async function downloadCSV(filename) {
+    async function downloadSelectedCSV() {
+      const year  = document.getElementById('dlYear').value;
+      const month = document.getElementById('dlMonth').value;
+      if (!year || year === '---' || !month || month === '---') return;
+      const filename = `${year}_${month}.csv`;
       setMsg('dlMsg', '取得中...', '');
       const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/${filename}`;
       try {
         const res = await fetch(api, { headers: githubHeaders() });
         if (!res.ok) throw new Error(`取得失敗: ${res.status}`);
-        const data    = await res.json();
-        const csvText = b64decode(data.content);
+        const csvText = b64decode((await res.json()).content);
         const blob    = new Blob([csvText], { type: 'text/csv' });
         const url     = URL.createObjectURL(blob);
-        const a       = document.createElement('a');
-        a.href = url; a.download = filename; a.click();
+        const a       = Object.assign(document.createElement('a'), { href: url, download: filename });
+        a.click();
         URL.revokeObjectURL(url);
         setMsg('dlMsg', `${filename} ダウンロード完了`, 'ok');
       } catch (e) {
@@ -542,14 +597,14 @@
     async function reloadConfig() {
       const { config } = await fetchConfig();
       renderTempTable(config);
-      renderValveTable(config);
+      renderValveGrid(config);
     }
 
     async function init() {
       try {
         const { config } = await fetchConfig();
         renderTempTable(config);
-        renderValveTable(config);
+        renderValveGrid(config);
       } catch (e) {
         setMsg('tempMsg', `config読み込み失敗: ${e.message}`, 'err');
       }
@@ -557,9 +612,7 @@
       await fetchCSVList();
     }
 
-    // status.json を 30秒ごとにポーリング
     setInterval(fetchStatus, 30000);
-
     init();
   </script>
 </body>
