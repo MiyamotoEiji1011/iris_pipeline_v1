@@ -101,6 +101,45 @@ git add .
 git commit -m "update raspi code"
 git push
 
+## デーモン（systemd）
+
+### 初回登録
+```bash
+sudo cp ~/iris_pipeline_v1/raspi/iris_pipeline.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable iris_pipeline
+sudo systemctl start iris_pipeline
+```
+
+### 状態確認
+```bash
+sudo systemctl status iris_pipeline
+```
+
+### ログ確認
+```bash
+journalctl -u iris_pipeline -f
+```
+
+### 停止 / 起動 / 再起動
+```bash
+sudo systemctl stop iris_pipeline
+sudo systemctl start iris_pipeline
+sudo systemctl restart iris_pipeline
+```
+
+### 自動起動の無効化
+```bash
+sudo systemctl disable iris_pipeline
+```
+
+### コード更新後の反映手順
+```bash
+cd ~/iris_pipeline_v1
+git pull
+sudo systemctl restart iris_pipeline
+```
+
 # webapp
 https://miyamotoeiji1011.github.io/iris_pipeline_v1/
 

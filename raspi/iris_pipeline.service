@@ -1,0 +1,17 @@
+[Unit]
+Description=Iris Pipeline main controller
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/iris_pipeline_v1/raspi
+ExecStart=/home/pi/iris_pipeline_v1/raspi/.venv/bin/python main.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
