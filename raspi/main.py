@@ -231,7 +231,11 @@ def main():
             # ② GitHub 設定確認（CONFIG_POLL_INTERVAL）
             if now - last_config_poll >= CONFIG_POLL_INTERVAL:
                 last_config_poll = now
-                check_and_apply_config()
+                start_api_led()
+                try:
+                    check_and_apply_config()
+                finally:
+                    stop_api_led()
 
             # ③ CSV 記録（RECORD_INTERVAL）
             if now - last_record >= RECORD_INTERVAL:
@@ -242,7 +246,11 @@ def main():
             if now - last_status_push >= STATUS_PUSH_INTERVAL:
                 last_status_push = now
                 log("----status push----")
-                push_status_json(UNITS, _applied_version)
+                start_api_led()
+                try:
+                    push_status_json(UNITS, _applied_version)
+                finally:
+                    stop_api_led()
 
             # ⑤ CSV git push（DATA_PUSH_INTERVAL）
             if now - last_data_push >= DATA_PUSH_INTERVAL:
