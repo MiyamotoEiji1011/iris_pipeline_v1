@@ -1,5 +1,5 @@
 {
-  "version": 59,
+  "version": 60,
   "units": {
     "A": {
       "label": "ユニットA",
@@ -29,8 +29,8 @@
       "label": "ユニットD",
       "temp_on": 24,
       "temp_off": 23.9,
-      "mode": "manual",
-      "manual_command": "ON",
+      "mode": "auto",
+      "manual_command": "OFF",
       "control_sensor": "銅管部温度"
     },
     "E": {
