@@ -103,3 +103,7 @@ git push
 
 # webapp
 https://miyamotoeiji1011.github.io/iris_pipeline_v1/
+
+# Tailscale
+IPの確認
+tailscale ip -4

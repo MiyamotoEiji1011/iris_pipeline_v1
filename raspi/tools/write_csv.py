@@ -54,10 +54,23 @@ def append_csv(units: dict, data_dir: str):
 
     os.makedirs(data_dir, exist_ok=True)
 
-    write_header = not os.path.exists(filepath)
+    expected_headers = _get_headers(units)
+
+    # ファイルが存在する場合、ヘッダーが現在のフォーマットと一致するか確認
+    # 不一致（フォーマット変更時など）はファイルを作り直す
+    if os.path.exists(filepath):
+        with open(filepath, "r", encoding="utf-8") as f:
+            existing_header = next(csv.reader(f), None)
+        if existing_header != expected_headers:
+            os.rename(filepath, filepath.replace(".csv", "_old.csv"))
+            write_header = True
+        else:
+            write_header = False
+    else:
+        write_header = True
 
     with open(filepath, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         if write_header:
-            writer.writerow(_get_headers(units))
+            writer.writerow(expected_headers)
         writer.writerow(_get_row(units, now))
