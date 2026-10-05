@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Iris Pipeline</title>
+  <title>ベイシア古河総和店 制御パネル</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     body {
@@ -59,23 +59,19 @@
     .status-label { color: #888; font-size: 0.75rem; display: block; }
     .dot {
       display: inline-block;
-      width: 9px; height: 9px;
+      width: 11px; height: 11px;
       border-radius: 50%;
-      margin-right: 4px;
+      margin-right: 5px;
       background: #bbb;
       vertical-align: middle;
+      flex-shrink: 0;
     }
-    .dot.online  { background: #28a745; }
+    .dot.online  { background: #28a745; box-shadow: 0 0 6px #28a745; }
     .dot.offline { background: #dc3545; }
-    .badge {
-      display: inline-block;
-      padding: 1px 7px;
-      border-radius: 10px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-    .badge.ok      { background: #d4edda; color: #155724; }
-    .badge.pending { background: #fff3cd; color: #856404; }
+    /* 経過時間の色 */
+    .elapsed.fresh  { color: #28a745; font-weight: 600; }
+    .elapsed.warn   { color: #e07b00; font-weight: 600; }
+    .elapsed.danger { color: #dc3545; font-weight: 700; }
 
     /* ---- テーブル共通 ---- */
     .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -176,7 +172,7 @@
   </style>
 </head>
 <body>
-  <h1>Iris Pipeline 制御パネル</h1>
+  <h1>ベイシア古河総和店 制御パネル</h1>
 
   <!-- システム状態 -->
   <div class="card">
@@ -189,10 +185,7 @@
       <div class="status-item">
         <span class="status-label">最終更新</span>
         <span id="updatedAt">-</span>
-      </div>
-      <div class="status-item">
-        <span class="status-label">Config</span>
-        <span id="configBadge">-</span>
+        <span id="elapsedText" class="elapsed" style="margin-left:6px;"></span>
       </div>
     </div>
   </div>
@@ -254,7 +247,7 @@
     const STATUS_API = `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/status.json`;
     const DATA_API   = `https://api.github.com/repos/${OWNER}/${REPO}/contents/data`;
     const UNITS      = ['A','B','C','D','E','F','G','H'];
-    const ONLINE_MS  = 10 * 60 * 1000;
+    const ONLINE_MS  = 2 * 60 * 1000;
 
     // ===================================================================
     // 状態
@@ -265,6 +258,7 @@
     let _lastWrittenVer = 0;
     let _localTempEdits = {};
     let _csvFiles       = [];
+    let _lastUpdatedAt  = null;
 
     // ===================================================================
     // ヘルパ
@@ -300,6 +294,23 @@
         _busy || document.getElementById('dlYear').value === '---';
     }
 
+    function updateElapsed() {
+      const el = document.getElementById('elapsedText');
+      if (!_lastUpdatedAt) { el.textContent = ''; return; }
+      const diffSec = Math.floor((Date.now() - _lastUpdatedAt) / 1000);
+      let text, cls;
+      if (diffSec < 60) {
+        text = `${diffSec}秒前`;
+        cls  = diffSec < 30 ? 'elapsed fresh' : 'elapsed warn';
+      } else {
+        const min = Math.floor(diffSec / 60);
+        text = `${min}分前`;
+        cls  = min < 2 ? 'elapsed warn' : 'elapsed danger';
+      }
+      el.textContent = text;
+      el.className   = cls;
+    }
+
     // ===================================================================
     // GitHub API
     // ===================================================================
@@ -328,7 +339,6 @@
         throw new Error(`書き込み失敗: ${res.status} ${err.message || ''}`);
       }
       _lastWrittenVer = config.version;
-      updateConfigBadge();
       return config.version;
     }
 
@@ -360,31 +370,19 @@
         document.getElementById('onlineDot').className    = 'dot offline';
         document.getElementById('onlineText').textContent = 'オフライン（未取得）';
         document.getElementById('updatedAt').textContent  = '-';
+        document.getElementById('elapsedText').textContent = '';
         return;
       }
-      const diffMs  = Date.now() - new Date(status.updated_at).getTime();
-      const online  = diffMs < ONLINE_MS;
-      const diffSec = Math.floor(diffMs / 1000);
-      const elapsed = diffSec < 60 ? `${diffSec}秒前` : `${Math.floor(diffSec / 60)}分前`;
+      _lastUpdatedAt = new Date(status.updated_at).getTime();
+      const online   = (Date.now() - _lastUpdatedAt) < ONLINE_MS;
 
       document.getElementById('onlineDot').className    = 'dot ' + (online ? 'online' : 'offline');
       document.getElementById('onlineText').textContent = online ? 'オンライン' : 'オフライン（通信停止の可能性）';
-      document.getElementById('updatedAt').textContent  = `${status.updated_at} (${elapsed})`;
+      document.getElementById('updatedAt').textContent  = status.updated_at;
+      updateElapsed();
 
-      updateConfigBadge(status.device?.applied_config_version);
       updateTemperatureDisplay(status);
       updateValveStatus(status);
-    }
-
-    function updateConfigBadge(appliedVer) {
-      const el    = document.getElementById('configBadge');
-      const piVer = appliedVer ?? _currentStatus?.device?.applied_config_version;
-      if (piVer === undefined) { el.innerHTML = '-'; return; }
-      if (_lastWrittenVer > 0 && piVer < _lastWrittenVer) {
-        el.innerHTML = `v${_lastWrittenVer} <span class="badge pending">反映待ち (Pi: v${piVer})</span>`;
-      } else {
-        el.innerHTML = `v${piVer} <span class="badge ok">反映済み</span>`;
-      }
     }
 
     function renderTempTable(config) {
@@ -613,6 +611,7 @@
     }
 
     setInterval(fetchStatus, 30000);
+    setInterval(updateElapsed, 1000);
     init();
   </script>
 </body>
