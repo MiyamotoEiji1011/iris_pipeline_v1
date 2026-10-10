@@ -1,33 +1,33 @@
 {
-  "updated_at": "2026-10-10T19:58:32+09:00",
+  "updated_at": "2026-10-10T19:58:43+09:00",
   "device": {
     "applied_config_version": 81
   },
   "units": {
     "A": {
-      "temperature": 56.25,
+      "temperature": 56.312,
       "intake_temperature": 19.0,
       "mode": "manual",
       "relay_actual": "OFF",
       "sensor_ok": true
     },
     "B": {
-      "temperature": 46.562,
-      "intake_temperature": 19.312,
+      "temperature": 46.812,
+      "intake_temperature": 19.375,
       "mode": "manual",
       "relay_actual": "OFF",
       "sensor_ok": true
     },
     "C": {
-      "temperature": 42.25,
+      "temperature": 42.062,
       "intake_temperature": 19.75,
       "mode": "manual",
       "relay_actual": "OFF",
       "sensor_ok": true
     },
     "D": {
-      "temperature": 55.187,
-      "intake_temperature": 20.5,
+      "temperature": 54.562,
+      "intake_temperature": 20.562,
       "mode": "manual",
       "relay_actual": "OFF",
       "sensor_ok": true
