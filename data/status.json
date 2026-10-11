@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-10-12T06:00:58+09:00",
+  "updated_at": "2026-10-12T06:01:08+09:00",
   "device": {
     "applied_config_version": 81
   },
   "units": {
     "A": {
-      "temperature": 48.125,
+      "temperature": 48.312,
       "intake_temperature": 16.062,
       "mode": "manual",
       "relay_actual": "OFF",
