@@ -171,6 +171,16 @@
     .dl-row select { font-size: 0.9rem; padding: 6px 8px; }
     .dl-row button { padding: 7px 16px; }
 
+    /* ---- フロアマップ ---- */
+    .fm-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    #floorMap { width: 100%; min-width: 320px; max-width: 680px; display: block; margin: 0 auto; }
+    .fm-legend {
+      display: flex; flex-wrap: wrap; gap: 6px 14px;
+      margin-top: 8px; font-size: 0.75rem; color: #555;
+    }
+    .fm-lgd-item { display: flex; align-items: center; gap: 5px; }
+    .fm-lgd-dot  { display: inline-block; width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
     /* ---- ログインオーバーレイ ---- */
     #loginOverlay {
       position: fixed;
@@ -281,6 +291,36 @@
     </div>
   </div>
 
+  <!-- フロアマップ -->
+  <div class="card">
+    <h2>フロアマップ</h2>
+    <div class="fm-wrap">
+      <svg id="floorMap" viewBox="0 0 767 520" xmlns="http://www.w3.org/2000/svg">
+        <!-- 建物外壁 -->
+        <path d="M 3 203 L 323 203 M 323 3 L 323 203 M 323 3 L 763 3 M 763 3 L 763 483 M 763 483 L 643 483 M 3 483 L 603 483 M 3 203 L 3 483 M 643 483 L 613 513"
+              stroke="#555" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <!-- エリア背景 -->
+        <rect x="413" y="33"  width="320" height="160" fill="#fafafa" stroke="#e4e4e4" stroke-width="1.5"/>
+        <rect x="413" y="243" width="320" height="200" fill="#fafafa" stroke="#e4e4e4" stroke-width="1.5"/>
+        <rect x="43"  y="243" width="290" height="200" fill="#fafafa" stroke="#e4e4e4" stroke-width="1.5"/>
+        <!-- エリアラベル -->
+        <text x="250" y="288" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#ccc">左エリア</text>
+        <text x="573" y="288" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#ccc">右エリア</text>
+        <text x="573" y="72"  text-anchor="middle" font-family="sans-serif" font-size="11" fill="#ccc">上エリア</text>
+        <text x="623" y="512" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#bbb">出入口</text>
+        <!-- ユニット（JS で描画） -->
+        <g id="fm_units"></g>
+      </svg>
+    </div>
+    <div class="fm-legend">
+      <span class="fm-lgd-item"><span class="fm-lgd-dot" style="background:#3b82f6"></span>ON（自動）</span>
+      <span class="fm-lgd-item"><span class="fm-lgd-dot" style="background:#f97316"></span>ON（手動）</span>
+      <span class="fm-lgd-item"><span class="fm-lgd-dot" style="background:#dbeafe;border:1px solid #93c5fd"></span>OFF（自動）</span>
+      <span class="fm-lgd-item"><span class="fm-lgd-dot" style="background:#fee2e2;border:1px solid #fca5a5"></span>OFF（手動）</span>
+      <span class="fm-lgd-item"><span class="fm-lgd-dot" style="background:#e5e7eb"></span>オフライン</span>
+    </div>
+  </div>
+
   <!-- 電磁弁制御 -->
   <div class="card">
     <h2>電磁弁制御</h2>
@@ -345,11 +385,24 @@
     // ===================================================================
     let _busy           = false;
     let _currentStatus  = null;
+    let _currentConfig  = null;
     let _statusEtag     = null;
     let _lastWrittenVer = 0;
     let _localTempEdits = {};
     let _csvFiles       = [];
     let _lastUpdatedAt  = null;
+
+    // フロアマップ: draw.io SVG と同一座標系（767×520 viewBox）
+    const UNIT_POSITIONS = {
+      G: { x: 433, y: 133, w: 80,  h: 40  },
+      H: { x: 543, y: 133, w: 170, h: 40  },
+      A: { x: 433, y: 253, w: 40,  h: 180 },
+      B: { x: 513, y: 253, w: 40,  h: 180 },
+      C: { x: 593, y: 253, w: 40,  h: 180 },
+      D: { x: 673, y: 253, w: 40,  h: 180 },
+      E: { x: 203, y: 253, w: 40,  h: 80  },
+      F: { x: 133, y: 253, w: 40,  h: 180 },
+    };
 
     // ===================================================================
     // ヘルパ
@@ -400,6 +453,120 @@
       }
       el.textContent = text;
       el.className   = cls;
+    }
+
+    // ===================================================================
+    // フロアマップ描画
+    // ===================================================================
+    function renderFloorMap(status, config) {
+      const container = document.getElementById('fm_units');
+      if (!container) return;
+      container.innerHTML = '';
+      const ns = 'http://www.w3.org/2000/svg';
+      const isOnline = status && (Date.now() - new Date(status.updated_at).getTime()) < ONLINE_MS;
+
+      const mkEl = (tag, attrs) => {
+        const el = document.createElementNS(ns, tag);
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+        return el;
+      };
+      const mkTxt = (x, y, content, size, bold, color) => {
+        const t = mkEl('text', {
+          x, y, 'text-anchor': 'middle',
+          'font-family': 'sans-serif', 'font-size': size, 'fill': color,
+          ...(bold ? { 'font-weight': 'bold' } : {})
+        });
+        t.textContent = content;
+        return t;
+      };
+
+      for (const [u, p] of Object.entries(UNIT_POSITIONS)) {
+        const uSt   = status?.units?.[u];
+        const uCfg  = config?.units?.[u];
+        const isOn  = uSt?.relay_actual === 'ON';
+        const isAuto = uCfg?.mode === 'auto';
+        const isEx  = ['E', 'F', 'G', 'H'].includes(u);
+
+        let bg, fg, border;
+        if (!isOnline || !uSt) {
+          bg = '#e5e7eb'; fg = '#9ca3af'; border = '#d1d5db';
+        } else if (isOn && isAuto) {
+          bg = '#3b82f6'; fg = '#ffffff'; border = '#2563eb';
+        } else if (isOn) {
+          bg = '#f97316'; fg = '#ffffff'; border = '#ea580c';
+        } else if (isAuto) {
+          bg = '#dbeafe'; fg = '#1e40af'; border = '#93c5fd';
+        } else {
+          bg = '#fee2e2'; fg = '#991b1b'; border = '#fca5a5';
+        }
+
+        const dotFill = !isOnline || !uSt ? '#9ca3af' : isOn ? '#22c55e' : '#ef4444';
+        const grp  = mkEl('g', {});
+        const cx   = p.x + p.w / 2;
+        const isWide = p.h <= 50;  // G(80×40), H(170×40)
+
+        grp.appendChild(mkEl('rect', {
+          x: p.x + 1, y: p.y + 1, width: p.w - 2, height: p.h - 2,
+          rx: '4', fill: bg, stroke: border, 'stroke-width': '1.5'
+        }));
+
+        if (isWide) {
+          // G, H: 横長・高さ40px
+          grp.appendChild(mkTxt(p.x + 13, p.y + 26, u, 13, true, fg));
+          grp.appendChild(mkEl('circle', { cx: p.x + 27, cy: p.y + 19, r: '5', fill: dotFill }));
+          if (isOnline && uSt) {
+            const tempVal = u === 'G' ? status?.air_temperature : uSt.intake_temperature;
+            const tempLbl = u === 'G' ? '気温' : '吸気';
+            const tx = u === 'G' ? p.x + 59 : cx + 18;
+            grp.appendChild(mkTxt(tx, p.y + 15, tempLbl, 8, false, fg));
+            grp.appendChild(mkTxt(tx, p.y + 29, fmtTemp(tempVal) + '℃', 10, false, fg));
+            if (u === 'G') {
+              // Gは吸気も追加（右端に）
+              grp.appendChild(mkTxt(p.x + 72, p.y + 15, '吸気', 8, false, fg));
+              grp.appendChild(mkTxt(p.x + 72, p.y + 29, fmtTemp(uSt.intake_temperature) + '℃', 9, false, fg));
+            }
+          }
+        } else {
+          // A-F: 縦長・幅40px
+          grp.appendChild(mkTxt(cx, p.y + 15, u, 12, true, fg));
+          grp.appendChild(mkEl('circle', { cx, cy: p.y + 27, r: '5', fill: dotFill }));
+          if (isOnline && uSt) {
+            if (isEx) {
+              // E, F: 吸気のみ
+              grp.appendChild(mkTxt(cx, p.y + 48, '吸気', 8, false, fg));
+              grp.appendChild(mkTxt(cx, p.y + 60, fmtTemp(uSt.intake_temperature) + '℃', 9, false, fg));
+            } else {
+              // A-D: 銅管 + 吸気
+              grp.appendChild(mkTxt(cx, p.y + 48, '銅管', 8, false, fg));
+              grp.appendChild(mkTxt(cx, p.y + 60, fmtTemp(uSt.temperature) + '℃', 9, false, fg));
+              grp.appendChild(mkTxt(cx, p.y + 80, '吸気', 8, false, fg));
+              grp.appendChild(mkTxt(cx, p.y + 92, fmtTemp(uSt.intake_temperature) + '℃', 9, false, fg));
+            }
+          }
+        }
+
+        // モードバッジ（右下隅 or 右端）
+        if (isOnline && uCfg) {
+          const bx = isWide ? p.x + p.w - 2 : p.x + p.w - 2;
+          const by = p.y + p.h - 2;
+          const badgeFill = isAuto ? 'rgba(0,0,0,.18)' : 'rgba(0,0,0,.25)';
+          const bw = 20, bh = 10;
+          const badge = mkEl('rect', {
+            x: bx - bw, y: by - bh, width: bw, height: bh,
+            rx: '3', fill: badgeFill
+          });
+          grp.appendChild(badge);
+          const bt = mkEl('text', {
+            x: bx - bw / 2, y: by - 2,
+            'text-anchor': 'middle', 'font-family': 'sans-serif',
+            'font-size': '7', 'fill': 'rgba(255,255,255,.9)'
+          });
+          bt.textContent = isAuto ? '自動' : '手動';
+          grp.appendChild(bt);
+        }
+
+        container.appendChild(grp);
+      }
     }
 
     // ===================================================================
@@ -493,8 +660,10 @@
       if (online) {
         updateTemperatureDisplay(status);
         updateValveStatus(status);
+        renderFloorMap(status, _currentConfig);
       } else {
         clearLiveData();
+        renderFloorMap(null, _currentConfig);
       }
     }
 
@@ -745,15 +914,19 @@
     // ===================================================================
     async function reloadConfig() {
       const { config } = await fetchConfig();
+      _currentConfig = config;
       renderTempTable(config);
       renderValveGrid(config);
+      renderFloorMap(_currentStatus, config);
     }
 
     async function init() {
       try {
         const { config } = await fetchConfig();
+        _currentConfig = config;
         renderTempTable(config);
         renderValveGrid(config);
+        renderFloorMap(null, config);  // 初期表示: オフライン状態でユニット位置を表示
       } catch (e) {
         setMsg('tempMsg', `config読み込み失敗: ${e.message}`, 'err');
       }
