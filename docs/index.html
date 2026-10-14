@@ -303,10 +303,7 @@
         <rect x="413" y="33"  width="320" height="160" fill="#fafafa" stroke="#e4e4e4" stroke-width="1.5"/>
         <rect x="413" y="243" width="320" height="200" fill="#fafafa" stroke="#e4e4e4" stroke-width="1.5"/>
         <rect x="43"  y="243" width="290" height="200" fill="#fafafa" stroke="#e4e4e4" stroke-width="1.5"/>
-        <!-- エリアラベル -->
-        <text x="250" y="288" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#ccc">左エリア</text>
-        <text x="573" y="288" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#ccc">右エリア</text>
-        <text x="573" y="72"  text-anchor="middle" font-family="sans-serif" font-size="11" fill="#ccc">上エリア</text>
+        <!-- 出入口マーク -->
         <text x="623" y="512" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#bbb">出入口</text>
         <!-- ユニット（JS で描画） -->
         <g id="fm_units"></g>
@@ -465,105 +462,62 @@
       const ns = 'http://www.w3.org/2000/svg';
       const isOnline = status && (Date.now() - new Date(status.updated_at).getTime()) < ONLINE_MS;
 
-      const mkEl = (tag, attrs) => {
+      const mkEl = (tag, attrs, text) => {
         const el = document.createElementNS(ns, tag);
         for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+        if (text !== undefined) el.textContent = text;
         return el;
-      };
-      const mkTxt = (x, y, content, size, bold, color) => {
-        const t = mkEl('text', {
-          x, y, 'text-anchor': 'middle',
-          'font-family': 'sans-serif', 'font-size': size, 'fill': color,
-          ...(bold ? { 'font-weight': 'bold' } : {})
-        });
-        t.textContent = content;
-        return t;
       };
 
       for (const [u, p] of Object.entries(UNIT_POSITIONS)) {
-        const uSt   = status?.units?.[u];
-        const uCfg  = config?.units?.[u];
-        const isOn  = uSt?.relay_actual === 'ON';
+        const uSt    = status?.units?.[u];
+        const uCfg   = config?.units?.[u];
+        const isOn   = uSt?.relay_actual === 'ON';
         const isAuto = uCfg?.mode === 'auto';
-        const isEx  = ['E', 'F', 'G', 'H'].includes(u);
+        const isEx   = ['E', 'F', 'G', 'H'].includes(u);
+        const isWide = p.h <= 50;
 
         let bg, fg, border;
         if (!isOnline || !uSt) {
-          bg = '#e5e7eb'; fg = '#9ca3af'; border = '#d1d5db';
+          bg = '#e5e7eb'; fg = '#6b7280'; border = '#d1d5db';
         } else if (isOn && isAuto) {
-          bg = '#3b82f6'; fg = '#ffffff'; border = '#2563eb';
+          bg = '#3b82f6'; fg = '#ffffff'; border = '#1d4ed8';
         } else if (isOn) {
-          bg = '#f97316'; fg = '#ffffff'; border = '#ea580c';
+          bg = '#f97316'; fg = '#ffffff'; border = '#c2410c';
         } else if (isAuto) {
-          bg = '#dbeafe'; fg = '#1e40af'; border = '#93c5fd';
+          bg = '#dbeafe'; fg = '#1e40af'; border = '#bfdbfe';
         } else {
-          bg = '#fee2e2'; fg = '#991b1b'; border = '#fca5a5';
+          bg = '#fee2e2'; fg = '#991b1b'; border = '#fecaca';
         }
 
-        const dotFill = !isOnline || !uSt ? '#9ca3af' : isOn ? '#22c55e' : '#ef4444';
-        const grp  = mkEl('g', {});
+        const grp = mkEl('g', { style: 'cursor:default' });
         const cx   = p.x + p.w / 2;
-        const isWide = p.h <= 50;  // G(80×40), H(170×40)
+        const cy   = p.y + p.h / 2;
 
+        // 背景
         grp.appendChild(mkEl('rect', {
           x: p.x + 1, y: p.y + 1, width: p.w - 2, height: p.h - 2,
           rx: '4', fill: bg, stroke: border, 'stroke-width': '1.5'
         }));
 
-        if (isWide) {
-          // G, H: 横長・高さ40px
-          grp.appendChild(mkTxt(p.x + 13, p.y + 26, u, 13, true, fg));
-          grp.appendChild(mkEl('circle', { cx: p.x + 27, cy: p.y + 19, r: '5', fill: dotFill }));
-          if (isOnline && uSt) {
-            const tempVal = u === 'G' ? status?.air_temperature : uSt.intake_temperature;
-            const tempLbl = u === 'G' ? '気温' : '吸気';
-            const tx = u === 'G' ? p.x + 59 : cx + 18;
-            grp.appendChild(mkTxt(tx, p.y + 15, tempLbl, 8, false, fg));
-            grp.appendChild(mkTxt(tx, p.y + 29, fmtTemp(tempVal) + '℃', 10, false, fg));
-            if (u === 'G') {
-              // Gは吸気も追加（右端に）
-              grp.appendChild(mkTxt(p.x + 72, p.y + 15, '吸気', 8, false, fg));
-              grp.appendChild(mkTxt(p.x + 72, p.y + 29, fmtTemp(uSt.intake_temperature) + '℃', 9, false, fg));
-            }
-          }
-        } else {
-          // A-F: 縦長・幅40px
-          grp.appendChild(mkTxt(cx, p.y + 15, u, 12, true, fg));
-          grp.appendChild(mkEl('circle', { cx, cy: p.y + 27, r: '5', fill: dotFill }));
-          if (isOnline && uSt) {
-            if (isEx) {
-              // E, F: 吸気のみ
-              grp.appendChild(mkTxt(cx, p.y + 48, '吸気', 8, false, fg));
-              grp.appendChild(mkTxt(cx, p.y + 60, fmtTemp(uSt.intake_temperature) + '℃', 9, false, fg));
-            } else {
-              // A-D: 銅管 + 吸気
-              grp.appendChild(mkTxt(cx, p.y + 48, '銅管', 8, false, fg));
-              grp.appendChild(mkTxt(cx, p.y + 60, fmtTemp(uSt.temperature) + '℃', 9, false, fg));
-              grp.appendChild(mkTxt(cx, p.y + 80, '吸気', 8, false, fg));
-              grp.appendChild(mkTxt(cx, p.y + 92, fmtTemp(uSt.intake_temperature) + '℃', 9, false, fg));
-            }
-          }
-        }
+        // ユニット名（中央）
+        grp.appendChild(mkEl('text', {
+          x: cx, y: cy + 5,
+          'text-anchor': 'middle', 'dominant-baseline': 'middle',
+          'font-family': 'sans-serif', 'font-size': isWide ? '15' : '16',
+          'font-weight': 'bold', 'fill': fg
+        }, u));
 
-        // モードバッジ（右下隅 or 右端）
-        if (isOnline && uCfg) {
-          const bx = isWide ? p.x + p.w - 2 : p.x + p.w - 2;
-          const by = p.y + p.h - 2;
-          const badgeFill = isAuto ? 'rgba(0,0,0,.18)' : 'rgba(0,0,0,.25)';
-          const bw = 20, bh = 10;
-          const badge = mkEl('rect', {
-            x: bx - bw, y: by - bh, width: bw, height: bh,
-            rx: '3', fill: badgeFill
-          });
-          grp.appendChild(badge);
-          const bt = mkEl('text', {
-            x: bx - bw / 2, y: by - 2,
-            'text-anchor': 'middle', 'font-family': 'sans-serif',
-            'font-size': '7', 'fill': 'rgba(255,255,255,.9)'
-          });
-          bt.textContent = isAuto ? '自動' : '手動';
-          grp.appendChild(bt);
+        // ホバーツールチップ
+        const lines = [uCfg?.label || `ユニット${u}`];
+        lines.push(`モード: ${isAuto ? '自動' : '手動'}`);
+        lines.push(`電磁弁: ${uSt?.relay_actual || '---'}`);
+        if (isOnline && uSt) {
+          if (!isEx) lines.push(`銅管: ${fmtTemp(uSt.temperature)}℃`);
+          lines.push(`吸気: ${fmtTemp(uSt.intake_temperature)}℃`);
+          if (u === 'G') lines.push(`気温: ${fmtTemp(status?.air_temperature)}℃`);
         }
+        grp.appendChild(mkEl('title', {}, lines.join('\n')));
 
         container.appendChild(grp);
       }
