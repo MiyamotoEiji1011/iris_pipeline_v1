@@ -44,13 +44,15 @@ def _build_status(units: dict, applied_version: int) -> dict:
         "device": {
             "applied_config_version": applied_version
         },
+        "air_temperature": units.get("G", {}).get("気温"),
         "units": {
             name: {
-                "temperature":        unit["銅管部温度"],
-                "intake_temperature": unit["吸気部温度"],
+                "temperature":        unit.get("銅管部温度"),
+                "intake_temperature": unit.get("吸気部温度"),
                 "mode":               unit["mode"],
                 "relay_actual":       "ON" if unit["relay_state"] else "OFF",
-                "sensor_ok":          unit["銅管部温度"] is not None,
+                "sensor_ok":          (unit.get("銅管部温度") is not None
+                                       or unit.get("吸気部温度") is not None),
             }
             for name, unit in units.items()
         }

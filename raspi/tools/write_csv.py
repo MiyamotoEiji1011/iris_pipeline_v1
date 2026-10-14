@@ -12,7 +12,7 @@ from datetime import datetime
 
 
 def _get_headers(units: dict) -> list[str]:
-    headers = ["timestamp"]
+    headers = ["timestamp", "気温[℃]"]
     for name in units:
         headers += [
             f"({name})銅管部温度[℃]",
@@ -26,12 +26,15 @@ def _get_headers(units: dict) -> list[str]:
 
 
 def _get_row(units: dict, now: datetime) -> list:
-    row = [now.strftime("%Y-%m-%d %H:%M:%S")]
+    row = [
+        now.strftime("%Y-%m-%d %H:%M:%S"),
+        units.get("G", {}).get("気温"),   # sensor_G1 計測の外気温
+    ]
     for unit in units.values():
         sensor = unit.get("control_sensor", "銅管部温度")
         row += [
-            unit["銅管部温度"],
-            unit["吸気部温度"],
+            unit.get("銅管部温度"),
+            unit.get("吸気部温度"),
             sensor,
             unit["temp_on"],
             unit["temp_off"],

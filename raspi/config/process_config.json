@@ -1,5 +1,5 @@
 {
-  "version": 81,
+  "version": 82,
   "units": {
     "A": {
       "label": "ユニットA",
@@ -39,7 +39,7 @@
       "temp_off": 24.4,
       "mode": "manual",
       "manual_command": "OFF",
-      "control_sensor": "銅管部温度"
+      "control_sensor": "吸気部温度"
     },
     "F": {
       "label": "ユニットF",
@@ -47,7 +47,7 @@
       "temp_off": 24,
       "mode": "manual",
       "manual_command": "OFF",
-      "control_sensor": "銅管部温度"
+      "control_sensor": "吸気部温度"
     },
     "G": {
       "label": "ユニットG",
@@ -55,7 +55,7 @@
       "temp_off": 24,
       "mode": "manual",
       "manual_command": "OFF",
-      "control_sensor": "銅管部温度"
+      "control_sensor": "吸気部温度"
     },
     "H": {
       "label": "ユニットH",
@@ -63,7 +63,7 @@
       "temp_off": 24,
       "mode": "manual",
       "manual_command": "OFF",
-      "control_sensor": "銅管部温度"
+      "control_sensor": "吸気部温度"
     }
   }
 }

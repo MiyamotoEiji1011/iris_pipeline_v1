@@ -17,9 +17,13 @@
 #                      "銅管部温度" / "吸気部温度"
 #
 # 現在値・状態（実行時に更新）
-#   銅管部温度  : 銅管センサの最新温度（float or None）
+#   銅管部温度  : 銅管センサの最新温度（float or None）A-D のみ
 #   吸気部温度  : 吸気センサの最新温度（float or None）
+#   気温        : 外気温（float or None）G ユニットの sensor_G1 が計測・全ユニット共有
 #   relay_state : リレーの現在状態（True=ON / False=OFF）
+#
+# E-H は銅管センサなし。制御センサは "吸気部温度" / "気温" のどちらかを選択する。
+# 気温は sensor_G1 が計測。E/F/H で "気温" を制御センサに選んだ場合も G の値を参照する。
 
 UNITS = {
     "A": {
@@ -93,11 +97,27 @@ UNITS = {
         "吸気部温度":   None,
         "relay_state": False,
     },
+    # E-H: 銅管センサなし。吸気センサのみ（配線変更後）
     "E": {
         "relay_gpio":  11,
         "sensor_gpio": 16,
         "sensors": [
-            {"id": "28-000000c98317", "name": "sensor_E1", "role": "銅管部温度"},
+            {"id": "28-000000c98317", "name": "sensor_E1", "role": "吸気部温度"},
+        ],
+        "label":          "",
+        "temp_on":        None,
+        "temp_off":       None,
+        "mode":           None,
+        "manual_command": "OFF",
+        "control_sensor": "吸気部温度",
+        "銅管部温度":   None,
+        "吸気部温度":   None,
+        "relay_state": False,
+    },
+    "F": {
+        "relay_gpio":  22,
+        "sensor_gpio": 16,
+        "sensors": [
             {"id": "28-000000ca859a", "name": "sensor_E2", "role": "吸気部温度"},
         ],
         "label":          "",
@@ -105,16 +125,33 @@ UNITS = {
         "temp_off":       None,
         "mode":           None,
         "manual_command": "OFF",
-        "control_sensor": "銅管部温度",
+        "control_sensor": "吸気部温度",
         "銅管部温度":   None,
         "吸気部温度":   None,
         "relay_state": False,
     },
-    "F": {
-        "relay_gpio":  22,
+    "G": {
+        "relay_gpio":  23,
         "sensor_gpio": 17,
         "sensors": [
-            {"id": "28-000000cc7387", "name": "sensor_F1", "role": "銅管部温度"},
+            {"id": "28-000000cc7387", "name": "sensor_F1", "role": "吸気部温度"},
+            {"id": "28-000000cc32ac", "name": "sensor_G1", "role": "気温"},
+        ],
+        "label":          "",
+        "temp_on":        None,
+        "temp_off":       None,
+        "mode":           None,
+        "manual_command": "OFF",
+        "control_sensor": "吸気部温度",
+        "銅管部温度":   None,
+        "吸気部温度":   None,
+        "気温":         None,
+        "relay_state": False,
+    },
+    "H": {
+        "relay_gpio":  24,
+        "sensor_gpio": 17,
+        "sensors": [
             {"id": "28-000000cc64ca", "name": "sensor_F2", "role": "吸気部温度"},
         ],
         "label":          "",
@@ -122,41 +159,7 @@ UNITS = {
         "temp_off":       None,
         "mode":           None,
         "manual_command": "OFF",
-        "control_sensor": "銅管部温度",
-        "銅管部温度":   None,
-        "吸気部温度":   None,
-        "relay_state": False,
-    },
-    "G": {
-        "relay_gpio":  23,
-        "sensor_gpio": 18,
-        "sensors": [
-            {"id": "28-000000cc32ac", "name": "sensor_G1", "role": "銅管部温度"},
-            {"id": "28-000000c97eac", "name": "sensor_G2", "role": "吸気部温度"},
-        ],
-        "label":          "",
-        "temp_on":        None,
-        "temp_off":       None,
-        "mode":           None,
-        "manual_command": "OFF",
-        "control_sensor": "銅管部温度",
-        "銅管部温度":   None,
-        "吸気部温度":   None,
-        "relay_state": False,
-    },
-    "H": {
-        "relay_gpio":  24,
-        "sensor_gpio": 19,
-        "sensors": [
-            {"id": "28-000000ca2ccf", "name": "sensor_H1", "role": "銅管部温度"},
-            {"id": "28-000000c9680f", "name": "sensor_H2", "role": "吸気部温度"},
-        ],
-        "label":          "",
-        "temp_on":        None,
-        "temp_off":       None,
-        "mode":           None,
-        "manual_command": "OFF",
-        "control_sensor": "銅管部温度",
+        "control_sensor": "吸気部温度",
         "銅管部温度":   None,
         "吸気部温度":   None,
         "relay_state": False,

@@ -274,6 +274,10 @@
         <span id="updatedAt">-</span>
         <span id="elapsedText" class="elapsed" style="margin-left:6px;"></span>
       </div>
+      <div class="status-item">
+        <span class="status-label">気温</span>
+        <span id="airTempText">---</span>℃
+      </div>
     </div>
   </div>
 
@@ -453,11 +457,15 @@
     // UI レンダリング
     // ===================================================================
     function clearLiveData() {
+      const airTempEl = document.getElementById('airTempText');
+      if (airTempEl) airTempEl.textContent = '---';
       UNITS.forEach(u => {
         ['tc_','ti_','vt_','vi_'].forEach(pre => {
           const el = document.getElementById(pre + u);
           if (el) el.textContent = '---';
         });
+        const vkEl = document.getElementById(`vk_${u}`);
+        if (vkEl) vkEl.textContent = '---';
         const dotEl = document.getElementById(`vd_${u}`);
         const txtEl = document.getElementById(`vr_${u}`);
         if (dotEl) dotEl.className = 'relay-dot';
@@ -503,14 +511,19 @@
         const intake   = fmtTemp(_currentStatus?.units?.[u]?.intake_temperature);
         const ctrl     = cfg.control_sensor || '銅管部温度';
         const label    = cfg.label || u;
+        const isEx     = ['E','F','G','H'].includes(u);
+        const sensorOpts = isEx
+          ? `<option value="吸気部温度" ${ctrl==='吸気部温度'?'selected':''}>吸気部</option>
+             <option value="気温" ${ctrl==='気温'?'selected':''}>気温</option>`
+          : `<option value="銅管部温度" ${ctrl==='銅管部温度'?'selected':''}>銅管部</option>
+             <option value="吸気部温度" ${ctrl==='吸気部温度'?'selected':''}>吸気部</option>`;
         const tr       = document.createElement('tr');
         tr.innerHTML = `
           <td title="${u}">${label}</td>
           <td><select id="cs_${u}" onchange="setControlSensor('${u}',this.value)">
-            <option value="銅管部温度" ${ctrl==='銅管部温度'?'selected':''}>銅管部</option>
-            <option value="吸気部温度" ${ctrl==='吸気部温度'?'selected':''}>吸気部</option>
+            ${sensorOpts}
           </select></td>
-          <td id="tc_${u}">${copper}</td>
+          <td id="tc_${u}">${isEx ? '---' : copper}</td>
           <td id="ti_${u}">${intake}</td>
           <td><input type="number" step="0.5" id="ton_${u}" value="${valOn}"
             class="${editOn!==undefined?'edited':''}"
@@ -527,13 +540,32 @@
       const grid = document.getElementById('valveGrid');
       grid.innerHTML = '';
       UNITS.forEach(u => {
-        const cfg    = config.units[u] || {};
-        const isAuto = cfg.mode === 'auto';
-        const label  = cfg.label || u;
-        const relay  = _currentStatus?.units?.[u]?.relay_actual;
+        const cfg     = config.units[u] || {};
+        const isAuto  = cfg.mode === 'auto';
+        const label   = cfg.label || u;
+        const relay   = _currentStatus?.units?.[u]?.relay_actual;
         const relayOn = relay === 'ON';
-        const copper = fmtTemp(_currentStatus?.units?.[u]?.temperature);
-        const intake = fmtTemp(_currentStatus?.units?.[u]?.intake_temperature);
+        const copper  = fmtTemp(_currentStatus?.units?.[u]?.temperature);
+        const intake  = fmtTemp(_currentStatus?.units?.[u]?.intake_temperature);
+        const airTemp = fmtTemp(_currentStatus?.air_temperature);
+        const isEx    = ['E','F','G','H'].includes(u);
+
+        let tempsHtml;
+        if (u === 'G') {
+          tempsHtml = `<div class="uc-temps">
+            <span>吸気 <b id="vi_${u}">${intake}</b>℃</span>
+            <span>気温 <b id="vk_${u}">${airTemp}</b>℃</span>
+          </div>`;
+        } else if (isEx) {
+          tempsHtml = `<div class="uc-temps">
+            <span>吸気 <b id="vi_${u}">${intake}</b>℃</span>
+          </div>`;
+        } else {
+          tempsHtml = `<div class="uc-temps">
+            <span>銅管 <b id="vt_${u}">${copper}</b>℃</span>
+            <span>吸気 <b id="vi_${u}">${intake}</b>℃</span>
+          </div>`;
+        }
 
         const card = document.createElement('div');
         card.className = 'unit-card';
@@ -543,10 +575,7 @@
             <span class="uc-name" title="${u}">${label}</span>
             <span class="mode-badge ${isAuto?'auto':'manual'}" id="vm_${u}">${isAuto?'自動':'手動'}</span>
           </div>
-          <div class="uc-temps">
-            <span>銅管 <b id="vt_${u}">${copper}</b>℃</span>
-            <span>吸気 <b id="vi_${u}">${intake}</b>℃</span>
-          </div>
+          ${tempsHtml}
           <div class="uc-relay">
             <span class="relay-dot ${relay?(relayOn?'on':'off'):''}" id="vd_${u}"></span>
             <span id="vr_${u}">${relay||'-'}</span>
@@ -566,6 +595,8 @@
     }
 
     function updateTemperatureDisplay(status) {
+      const airTempEl = document.getElementById('airTempText');
+      if (airTempEl) airTempEl.textContent = fmtTemp(status.air_temperature);
       UNITS.forEach(u => {
         const copper = fmtTemp(status.units?.[u]?.temperature);
         const intake = fmtTemp(status.units?.[u]?.intake_temperature);
@@ -573,6 +604,10 @@
           const el = document.getElementById(pre + u);
           if (el) el.textContent = i % 2 === 0 ? copper : intake;
         });
+        if (u === 'G') {
+          const vkEl = document.getElementById('vk_G');
+          if (vkEl) vkEl.textContent = fmtTemp(status.air_temperature);
+        }
       });
     }
 

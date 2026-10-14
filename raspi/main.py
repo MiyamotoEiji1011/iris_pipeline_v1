@@ -174,8 +174,9 @@ def control_units():
             log(f"  ユニット{unit_name} 手動操作")
             continue
 
-        sensor   = unit.get("control_sensor", "銅管部温度")
-        temp     = unit[sensor]
+        sensor = unit.get("control_sensor", "銅管部温度")
+        # "気温" は sensor_G1 が計測した外気温。ユニット G の値を全ユニットで共有する。
+        temp   = UNITS["G"].get("気温") if sensor == "気温" else unit.get(sensor)
         temp_on  = unit["temp_on"]
         temp_off = unit["temp_off"]
 
