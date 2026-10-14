@@ -678,12 +678,22 @@
       if (!year || year === '---' || !month || month === '---') return;
       const filename = `${year}_${month}.csv`;
       setMsg('dlMsg', '取得中...', '');
-      // Contents API は 1MB 超のファイルを返せないため raw URL を使用
-      const rawUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/data/${filename}`;
       try {
-        const res = await fetch(rawUrl, { headers: githubHeaders() });
-        if (!res.ok) throw new Error(`取得失敗: ${res.status}`);
-        const csvText = await res.text();
+        // ① Contents API でファイルの blob SHA を取得（サイズ制限なし）
+        const metaRes = await fetch(
+          `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/${filename}`,
+          { headers: githubHeaders() }
+        );
+        if (!metaRes.ok) throw new Error(`メタデータ取得失敗: ${metaRes.status}`);
+        const { sha } = await metaRes.json();
+
+        // ② Git Blobs API で本文を取得（100MB まで対応、CORS 対応）
+        const blobRes = await fetch(
+          `https://api.github.com/repos/${OWNER}/${REPO}/git/blobs/${sha}`,
+          { headers: { ...githubHeaders(), 'Accept': 'application/vnd.github.raw+json' } }
+        );
+        if (!blobRes.ok) throw new Error(`取得失敗: ${blobRes.status}`);
+        const csvText = await blobRes.text();
         const blob    = new Blob(['﻿' + csvText], { type: 'text/csv;charset=utf-8' });
         const url     = URL.createObjectURL(blob);
         const a       = Object.assign(document.createElement('a'), { href: url, download: filename });
